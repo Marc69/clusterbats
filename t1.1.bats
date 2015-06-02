@@ -16,5 +16,11 @@
 }
 
 @test "1.1.6 SElinux is disabled" {
-  run 'sestatus | grep disabled'
+  run bash -c "sestatus | grep disabled"
   [ "$status" -eq 0 ]
+}
+
+@test "1.1.8 Hostname is set correctly" {
+   hostname==controller.cluster 
+   [ "$status" -eq 0 ]
+}
