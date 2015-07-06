@@ -16,7 +16,7 @@
 }
 
 @test "1.1.6 SElinux is disabled" {
-  run bash -c "sestatus | grep disabled"
+  run bash -c "sestatus | grep 'SELinux status' | egrep 'disabled'"
   [ "$status" -eq 0 ]
 }
 
