@@ -12,4 +12,6 @@ On controller node (test of controller installation):
 
 4) ./bats/install.sh /usr/local
 
-5) bats t1.1.bats
+5) cd clusterbats
+
+6) bats t1.1.bats
