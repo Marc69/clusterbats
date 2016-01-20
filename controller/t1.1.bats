@@ -2,8 +2,7 @@
 load configuration
 
 @test "bash executes" {
-  run bash --version
-  [ "$status" -eq 0 ]
+  bash --version
 }
 
 @test "1.1.4 controller connects to internet" {
@@ -36,7 +35,7 @@ load configuration
 }
 
 @test "1.1.12 Hostname is set correctly" {
-   [ $HOSTNAME == controller.cluster ] && true
+   [ "$HOSTNAME" = controller.cluster ] 
 }
 
 @test "1.1.13 The controller node is setup to user LDAP for authentication" {

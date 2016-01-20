@@ -1,4 +1,4 @@
-CONFIG=/trinity/testing/clusterbats/$(</trinity/site).cfg
+CONFIG=/root/clusterbats/controller/$(</trinity/site).cfg
 source ${CONFIG}
 CONTAINERS=${NODES/node/c}
 
