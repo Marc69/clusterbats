@@ -13,5 +13,8 @@
             [[ "$i" -ne 30 ]] # timeout after 2.5 hours
         done
     fi
-    ! ssh node001 /xcatpost/cv_fly_clusterbats | grep "not ok"
+    ssh node001 git clone https://github.com/clustervision/clusterbats
+    ssh node001 git clone https://github.com/sstephenson/bats
+    ssh node001 ./bats/install.sh /usr/local
+    ssh node001 bats /root/clusterbats/controller/*
 }
