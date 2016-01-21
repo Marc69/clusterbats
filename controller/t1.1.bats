@@ -30,7 +30,6 @@ load configuration
 }
 
 @test "1.1.10 The timezone is set correctly" {
-  echo $TIMEZONE > TZ
   date | grep $TIMEZONE
 }
 
