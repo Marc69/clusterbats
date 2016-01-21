@@ -13,8 +13,8 @@
             [[ "$i" -ne 30 ]] # timeout after 2.5 hours
         done
     fi
-    ssh -o StrictHostKeyChecking=no node001 "git clone https://github.com/clustervision/clusterbats || (cd clusterbats; git pull; cd -)"
-    ssh -o StrictHostKeyChecking=no node001 git clone https://github.com/sstephenson/bats || true
-    ssh -o StrictHostKeyChecking=no node001 ./bats/install.sh /usr/local || true
-    ssh -o StrictHostKeyChecking=no node001 bats /root/clusterbats/controller 
+    ssh -o StrictHostKeyChecking=no -q node001 "git clone https://github.com/clustervision/clusterbats || (cd clusterbats; git pull; cd -)"
+    ssh -o StrictHostKeyChecking=no -q node001 git clone https://github.com/sstephenson/bats || true
+    ssh -o StrictHostKeyChecking=no -q node001 ./bats/install.sh /usr/local || true
+    ssh -o StrictHostKeyChecking=no -q node001 bats /root/clusterbats/controller/t*bats
 }
