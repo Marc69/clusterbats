@@ -8,5 +8,5 @@
     done
 
     # now perform test related specifically to the reboot
-    ! ssh node001 /xcatpost/cv_fly_clusterbats | grep "not ok"
+    ! ssh -o StrictHostKeyChecking=no -q node001 bats /root/clusterbats/controller/t*bats | grep "not ok"
 }

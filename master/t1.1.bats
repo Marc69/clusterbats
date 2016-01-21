@@ -16,5 +16,5 @@
     ssh -o StrictHostKeyChecking=no -q node001 "git clone https://github.com/clustervision/clusterbats || (cd clusterbats; git pull; cd -)"
     ssh -o StrictHostKeyChecking=no -q node001 git clone https://github.com/sstephenson/bats || true
     ssh -o StrictHostKeyChecking=no -q node001 ./bats/install.sh /usr/local || true
-    ssh -o StrictHostKeyChecking=no -q node001 bats /root/clusterbats/controller/t*bats
+    ! ssh -o StrictHostKeyChecking=no -q node001 bats /root/clusterbats/controller/t*bats | grep "not ok"
 }
