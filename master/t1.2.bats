@@ -6,7 +6,4 @@
        fi
        sleep 20
     done
-
-    # now perform test related specifically to the reboot
-    ! ssh -o StrictHostKeyChecking=no -q node001 bats /root/clusterbats/controller/t*bats | grep "not ok"
 }
