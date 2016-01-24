@@ -1,4 +1,4 @@
-load configuration
+load ../controller/configuration
 
 @test "3.2.2 Slurm report the correct containers for our cluster" {
    run sinfo 
