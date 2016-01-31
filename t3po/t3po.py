@@ -1,3 +1,8 @@
+#title          : t3po
+#description    : Test runner script for Trinity
+#author         : Hans Then
+#email          : hans.then@clustervision.com
+
 import tap
 import tap.parser
 import sqlite3
@@ -13,7 +18,6 @@ def connection():
     """Get a database connection."""
     return sqlite3.connect('/var/lib/t3po/test_log.db', 
         detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
-
 
 def initialize():
     """Initialize the database."""
@@ -47,7 +51,8 @@ def run(branch, rev=None, user=None, configuration=None, tests=[]):
         if not os.path.exists(tmpdir):
             os.makedirs(tmpdir)
         os.chdir(tmpdir)
-        for line in sh.git.clone('http://github.com/clustervision/trinity', _iter=True):
+        for line in sh.git.clone('http://github.com/clustervision/trinity', 
+                                 _iter=True):
             print line
 
     os.chdir(tmpdir+ '/trinity')
@@ -55,7 +60,8 @@ def run(branch, rev=None, user=None, configuration=None, tests=[]):
     if rev:
         sh.git.checkout(rev)
         if branch != sh.git('rev-parse', '--abbrev-ref', 'HEAD').strip():
-            logger.warning("Specified revision %s is not in branch %s", revision, branch)
+            logger.warning("Specified revision %s is not in branch %s", 
+                            revision, branch)
     else:
         sh.git.checkout(branch)
         rev = sh.git('rev-parse', 'HEAD')
@@ -66,7 +72,8 @@ def run(branch, rev=None, user=None, configuration=None, tests=[]):
     conn = connection()
     c = conn.cursor()
 
-    c.execute('insert into testrun (run, branch, revision, user) values (?,?,?,?)', \
+    c.execute('insert into testrun (run, branch, revision, user) ' + 
+              'values (?,?,?,?)', \
               (time, branch, str(rev).strip(), user))
 
     conn.commit()
@@ -134,7 +141,8 @@ def html():
         print '<th>' + id + '</th>'
         print '<th>' + desc + '</th>'
         for run in runs:
-            c.execute('select * from testresult where run = ? and id = ?', (run, id))
+            c.execute('select * from testresult where run = ? and id = ?', 
+                      (run, id))
             r = c.fetchone()
             if r:
                 print '<td>' + str(r[2]) + '</td>'
@@ -144,6 +152,9 @@ def html():
     print '</table>'
 
 
+#------------------------------------------------
+# A few lines of test code
+#------------------------------------------------
 initialize()
-run('r7')
+run('r7', tests=['/root/hans/clusterbats/master/t1.2.bats'])
 html()
