@@ -2,6 +2,7 @@ load configuration
 
 @test "Trinity Api is running" {
    pip install httpie > /dev/null 2>&1
+   yum -y install jq
    http GET http://10.141.255.254:32123/trinity/v1/ | grep Welcome
 }
 

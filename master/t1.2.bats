@@ -4,6 +4,7 @@
        if nodestat node001 | grep ssh; then 
            break;
        fi
+       echo "still waiting" >&3
        sleep 20
     done
 }

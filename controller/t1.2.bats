@@ -1,8 +1,8 @@
 #!/user/env/bin/bats
-load configuration
+load config/configuration
 
-@test "1.2.0.a We can configure the switch" {
-  chtab node=switch hosts.ip=${SWITCH}  #10.141.253.1
+@test "1.2.0.0 - We can configure the switch" {
+  chtab node=switch hosts.ip=${SWITCH}  
 
   echo "${SWITCH_TABLE}" > /tmp/switch.csv
   tabrestore /tmp/switch.csv
@@ -16,7 +16,7 @@ load configuration
   ping -c 1 switch &> /dev/null 
 }
 
-@test "1.2.1 We can discover compute nodes" {
+@test "1.2.1 - We can discover compute nodes" {
   if [ -e "/tftpboot/xcat/xnba/nodes/node001" ]; then
     skip
   fi
@@ -34,12 +34,11 @@ load configuration
     done
     # trigger the timeout condition
     [[ "$i" -ne 100 ]] 
-    sleep 5
     break
   done
 }
 
-@test "1.2.5 We can assign the containers to the default virtual cluster a" {
+@test "1.2.5 - We can assign the containers to the default virtual cluster a" {
   if lsdef -t node node001 | grep booted; then
     skip
   fi
@@ -75,16 +74,16 @@ EOF
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl restart slurm
 }
 
-@test "1.2.6 There is a virtual login node" {
+@test "1.2.6 - There is a virtual login node" {
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a date
 }
 
-@test "1.2.7 Slurm and munge are running on the virtual login nodes" {
+@test "1.2.7 - Slurm and munge are running on the virtual login nodes" {
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl status slurm
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl status munge
 }
 
-@test "1.2.8 The compute nodes can connect to the internet" {
+@test "1.2.8 - The compute nodes can connect to the internet" {
   ssh -o StrictHostKeyChecking=no node001 ping -c5 8.8.8.8
 }
 
