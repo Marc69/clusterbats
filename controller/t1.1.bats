@@ -1,67 +1,72 @@
 #!/usr/bin/env bats
-load config/configuration
+load configuration
 
 @test "bash executes" {
-  bash --version
+  run bash --version
+  [ "$status" -eq 0 ]
 }
 
-@test "1.1.4 - controller connects to internet" {
+@test "1.1.4 controller connects to internet" {
   ping -q -c1 google.com
 }
 
-@test "1.1.5 - firewall is disabled" {
+@test "1.1.5 firewall is disabled" {
   systemctl status firewall | grep inactive
 }
 
-@test "1.1.6.0 - iptables have the right masquerade rules" {
+@test "1.1.6a iptables have the right masquerade rules" {
    iptables-save | grep -C3 'POSTROUTING -s 10.146.0.0/16 ! -o docker0 -j MASQUERADE' | grep 'POSTROUTING -o [0-z]*[0-1] -j MASQUERADE'
 }
 
-@test "1.1.6.1 - iptables have the right acceptance rules" {
+@test "1.1.6b iptables have the right acceptance rules" {
    iptables-save | grep -C3 'br100 -j ACCEPT'
 }
 
-@test "1.1.8 - 3d interface is taken over by the bridge" {
+@test "1.1.8 3d interface is taken over by the bridge" {
    ip a | grep 'master br100'
 }
 
-@test "1.1.9 - SElinux is disabled" {
+@test "1.1.9 SElinux is disabled" {
   sestatus | grep 'SELinux status' | egrep disabled
 }
 
-@test "1.1.10 - The timezone is set correctly" {
+@test "1.1.10 The timezone is set correctly" {
+  echo $TIMEZONE > TZ
   date | grep $TIMEZONE
 }
-
-@test "1.1.12 - Hostname is set correctly" {
-   [ "$HOSTNAME" = controller.cluster ] 
+@test "1.1.11a The timezone is set correctly in the site table" {
+  tabdump site | grep -i timezone | grep UTC
 }
 
-@test "1.1.13 - The controller node is setup to user LDAP for authentication" {
+@test "1.1.12 Hostname is set correctly" {
+   [ $HOSTNAME == controller.cluster ] && true
+}
+
+@test "1.1.13 The controller node is setup to user LDAP for authentication" {
    systemctl status slapd
 }
 
-@test "1.1.14 - The controller node hosts a docker registry with a trinity image" {
+@test "1.1.14 The controller node hosts a docker registry with a trinity image" {
    docker images | grep "controller:5050/trinity"
 }
 
-@test "1.1.15 - DNS is working on the controller" {
+@test "1.1.15 DNS is working on the controller" {
    host controller localhost
 }
 
-@test "1.1.17 - Openvswitch is available" {
+@test "1.1.17 Openvswitch is available" {
    find /install/netboot/centos7/x86_64/trinity/rootimg/ -name "openvswitch" | grep openvswitch
 }
 
-@test "1.1.18 - We can generate and pack a compute image" {
-   if [[ -f /install/netboot/centos7/x86_64/trinity/rootimg.gz ]]; then
-     skip
-   fi
+@test "1.1.18 We can generate and pack a compute image" {
+   skip
    genimage centos7-x86_64-netboot-compute
    packimage centos7-x86_64-netboot-compute
 }
 
-@test "1.1.20 - Openstack services are running in containers" {
+#test "1.1.19 The switch is correctly configured for node discovery" in t1.2.bats
+
+@test "1.1.20 Openstack services are running in containers" {
    docker ps | grep nova_controller | grep -i up
    docker ps | grep glance | grep -i up
    docker ps | grep keystone | grep -i up
@@ -69,7 +74,7 @@ load config/configuration
    docker ps | grep mariadb | grep -i up
 }
 
-@test "1.1.21 - the appropriate openstack services are active" {
+@test "1.1.21 the appropriate openstack services are active" {
    openstack-status | grep nova-api | grep inactive
    openstack-status | grep nova-compute | grep -w active
    openstack-status | grep nova-network | grep -w active
