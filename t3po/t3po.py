@@ -19,6 +19,44 @@ def connection():
     return sqlite3.connect('/var/lib/t3po/test_log.db', 
         detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
 
+
+def html():
+    """Ugly hack to create an HTML table for the test runs"""
+    conn = connection()
+    c = conn.cursor()
+    c.execute('select * from testrun')
+    print '<table><tr><th></th>'
+    runs = []
+    r = c.fetchone()
+    while r:
+        print '<th>' + str(r) + '</th>'
+        runs.append(r[0])
+        r = c.fetchone()
+    print '</tr>'
+    # collect test descriptions
+    c.execute('select * from test')
+    ids = []
+    r = c.fetchone()
+    while r:
+        ids.append((r[0], r[1]))
+        r = c.fetchone()
+    # collect matches between tests and runs
+    for id, desc in ids:
+        print '<tr>'
+        print '<th>' + id + '</th>'
+        print '<th>' + desc + '</th>'
+        for run in runs:
+            c.execute('select * from testresult where run = ? and id = ?', 
+                      (run, id))
+            r = c.fetchone()
+            if r:
+                print '<td>' + str(r[2]) + '</td>'
+            else:
+                print '<td> </td>'
+        print '</tr>'
+    print '</table>'
+
+
 def initialize():
     """Initialize the database."""
     if os.path.exists('/var/lib/t3po/test_log.db'):
@@ -114,43 +152,6 @@ def store_tap(run, stream):
             # FIXME:
             # attach the diagnostics lines
             conn.commit()
-
-def html():
-    """Ugly hack to create an HTML table for the test runs"""
-    conn = connection()
-    c = conn.cursor()
-    c.execute('select * from testrun')
-    print '<table><tr><th></th>'
-    runs = []
-    r = c.fetchone()
-    while r:
-        print '<th>' + str(r) + '</th>'
-        runs.append(r[0])
-        r = c.fetchone()
-    print '</tr>'
-    # collect test descriptions
-    c.execute('select * from test')
-    ids = []
-    r = c.fetchone()
-    while r:
-        ids.append((r[0], r[1]))
-        r = c.fetchone()
-    # collect matches between tests and runs
-    for id, desc in ids:
-        print '<tr>'
-        print '<th>' + id + '</th>'
-        print '<th>' + desc + '</th>'
-        for run in runs:
-            c.execute('select * from testresult where run = ? and id = ?', 
-                      (run, id))
-            r = c.fetchone()
-            if r:
-                print '<td>' + str(r[2]) + '</td>'
-            else:
-                print '<td> </td>'
-        print '</tr>'
-    print '</table>'
-
 
 #------------------------------------------------
 # A few lines of test code
