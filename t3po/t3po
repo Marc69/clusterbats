@@ -74,48 +74,6 @@ def initialize():
     except Exception, error:
         logger.error("Unable to initialize the database: %s", error)
 
-
-def run(branch, rev=None, user=None, configuration=None, tests=[], to='/var/www/html/index.html'):
-    """Run a set of tests"""
-    if not tests: 
-        tests = ['/root/hans/clusterbats/master/t1.1.bats']
-
-    # Setup the correct version on the master node
-    tmpdir = '/tmp/t3po'
-    if not os.path.exists(tmpdir + '/trinity'):
-        if not os.path.exists(tmpdir):
-            os.makedirs(tmpdir)
-        os.chdir(tmpdir)
-        sh.git.clone('http://github.com/clustervision/trinity')
-
-    os.chdir(tmpdir+ '/trinity')
-    # Collect branch and/or revision information
-    if rev:
-        sh.git.checkout(rev)
-        if branch != sh.git('rev-parse', '--abbrev-ref', 'HEAD').strip():
-            logger.debug("Specified revision %s is not in branch %s", 
-                          revision, branch)
-    else:
-        sh.git.checkout(branch)
-        rev = sh.git('rev-parse', 'HEAD').strip()
-    sh.bash('update', 'master')
-
-    # Write the testrun 
-    date = datetime.date.today()
-    conn = connection()
-    c = conn.cursor()
-
-    c.execute('insert or replace into testrun (run, branch, revision, user) ' + 
-              'values (?,?,?,?)', \
-              (date, branch, str(rev).strip(), user))
-
-    conn.commit()
-
-    for test in tests:
-        stream = run_test(rev, test)
-        store_tap(date, stream)
-    report(to)
-
         
 def report(to='/var/www/html/index.html'):
     """Ugly hack to create an HTML table for the test runs
@@ -159,6 +117,48 @@ def report(to='/var/www/html/index.html'):
             print >>file, '</tr>'
         print >>file, '</table>'
         print >>file, '</body></html>'
+
+
+def run(branch, rev=None, user=None, configuration=None, tests=[], to='/var/www/html/index.html'):
+    """Run a set of tests"""
+    if not tests: 
+        tests = ['/root/hans/clusterbats/master/t1.1.bats']
+
+    # Setup the correct version on the master node
+    tmpdir = '/tmp/t3po'
+    if not os.path.exists(tmpdir + '/trinity'):
+        if not os.path.exists(tmpdir):
+            os.makedirs(tmpdir)
+        os.chdir(tmpdir)
+        sh.git.clone('http://github.com/clustervision/trinity')
+
+    os.chdir(tmpdir+ '/trinity')
+    # Collect branch and/or revision information
+    if rev:
+        sh.git.checkout(rev)
+        if branch != sh.git('rev-parse', '--abbrev-ref', 'HEAD').strip():
+            logger.debug("Specified revision %s is not in branch %s", 
+                          revision, branch)
+    else:
+        sh.git.checkout(branch)
+        rev = sh.git('rev-parse', 'HEAD').strip()
+    sh.bash('update', 'master')
+
+    # Write the testrun 
+    date = datetime.date.today()
+    conn = connection()
+    c = conn.cursor()
+
+    c.execute('insert or replace into testrun (run, branch, revision, user) ' + 
+              'values (?,?,?,?)', \
+              (date, branch, str(rev).strip(), user))
+
+    conn.commit()
+
+    for test in tests:
+        stream = run_test(rev, test)
+        store_tap(date, stream)
+    report(to)
 
 
 def run_test(rev, test):
@@ -241,6 +241,9 @@ if __name__ == '__main__':
                          help='The test files to be run')
     parser.add_argument('--branch', type=str,
                          help='The branch to be tested')
+    parser.add_argument('--rev', type=str,
+                         help='The revision to be tested')
+    args = parser.parse_args()
     args = parser.parse_args()
     initialize()
-    run(args.branch, tests=args.files)
+    run(args.branch, rev=args.rev, tests=args.files)
