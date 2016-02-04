@@ -1,7 +1,7 @@
 #!/usr/bin/python
-
 #title          : t3po
 #description    : Test runner script for Trinity
+#                 Requires tap.py and sh to be installed using pip.
 #author         : Hans Then
 #email          : hans.then@clustervision.com
 
@@ -28,10 +28,9 @@ def cmd(*cmd):
        We do not use the sh module for this, since we 
        found that it would make some commands hang (e.g. rpower)."""
     logger.debug(cmd)
-    try:
-        return subprocess.check_output(list(cmd), stderr=subprocess.STDOUT).split('\n')
-    except subprocess.CalledProcessError, e:
-        return e.output.split('\n')
+    p = subprocess.Popen(list(cmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    for line in iter(p.stdout.readline,''):
+        yield line
 
 
 def connection():
