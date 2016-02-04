@@ -2,6 +2,7 @@
 load config/configuration
 
 @test "1.2.0.0 - We can configure the switch" {
+  # t1.1.19 in test sheet
   chtab node=switch hosts.ip=${SWITCH} # from configuration
 
   echo "${SWITCH_TABLE}" > /tmp/switch.csv
@@ -54,6 +55,7 @@ EOF
   makehosts vc-a
   makedns vc-a > /dev/null || true
 
+# This is test 1.2.3 in the test sheet
   nodeset ${NODES} osimage=centos7-x86_64-netboot-trinity
   rpower $NODES reset
   systemctl restart trinity_api
@@ -87,9 +89,3 @@ EOF
 @test "1.2.8 - The compute nodes can connect to the internet" {
   ssh -o StrictHostKeyChecking=no node001 ping -c5 8.8.8.8
 }
-
-
-@test "/cluster/vc-a/.modulespath is a file not a directory -- can be removed" {
-  [ -f /cluster/vc-a/.modulespath ]
-}
-

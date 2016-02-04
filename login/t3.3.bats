@@ -1,4 +1,4 @@
-load ../controller/configuration
+load ../controller/config/configuration
 
 @test "3.3.0 Obol exists" {
    which obol
