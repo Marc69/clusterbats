@@ -1,4 +1,4 @@
-load configuration
+load config/configuration
 
 @test "Trinity Api is running" {
    pip install httpie > /dev/null 2>&1

@@ -1,3 +1,3 @@
 @test "abc" {
-    echo "helloworld" >&3
+    rpower node001 reset
 }
