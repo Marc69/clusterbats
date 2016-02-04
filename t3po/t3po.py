@@ -99,7 +99,7 @@ def run(branch, rev=None, user=None, configuration=None, tests=[]):
         sh.git.checkout(rev)
         if branch != sh.git('rev-parse', '--abbrev-ref', 'HEAD').strip():
             logger.warning("Specified revision %s is not in branch %s", 
-                            revision, branch)
+                            rev, branch)
     else:
         sh.git.checkout(branch)
         rev = sh.git('rev-parse', 'HEAD')
