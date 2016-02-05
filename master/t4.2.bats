@@ -3,7 +3,7 @@
    cd /root
    mkdir -p /trinity/clustervision/CentOS/7
    # FIXME: this needs a password
-   git clone https://github.com/clustervision/modules | true
+   git clone https://hans.then@gmail.com:TomLoes2/github.com/clustervision/modules | true
 }
 @test "4.2.0.1 -- modules gcc" {
    [[ -d /trinity/clustervision/CentOS/7/modulefiles/gcc ]] && skip
