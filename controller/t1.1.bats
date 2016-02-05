@@ -32,9 +32,6 @@ load config/configuration
 @test "1.1.10 - The timezone is set correctly" {
   date | grep $TIMEZONE
 }
-@test "1.1.11.0 - The timezone is set correctly in the site table" {
-  tabdump site | grep -i timezone | grep $TIMEZONE
-}
 
 @test "1.1.12 - Hostname is set correctly" {
    [ "$HOSTNAME" = controller.cluster ] 
@@ -50,6 +47,10 @@ load config/configuration
 
 @test "1.1.15 - DNS is working on the controller" {
    host controller localhost
+}
+
+@test "1.1.16.0 - The timezone is set correctly in the site table" {
+  tabdump site | grep -i timezone | grep $TIMEZONE
 }
 
 @test "1.1.17 - Openvswitch is available" {
