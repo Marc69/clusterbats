@@ -34,7 +34,7 @@ EOF
    http --check-status PUT http://10.141.255.254:32123/trinity/v1/clusters/a \
        X-Tenant:admin \
        X-Auth-Token:$TOKEN \
-       specs:='{"default":2}' 
+       specs:='{"default":1}' 
 }
 
 @test "2.1.4 We can allocate resources to a tenant." {
@@ -48,7 +48,7 @@ EOF
        PUT http://10.141.255.254:32123/trinity/v1/clusters/b \
        X-Tenant:admin \
        X-Auth-Token:$TOKEN \
-       specs:='{"default":2}' 
+       specs:='{"default":1}' 
 }
 
 @test "2.1.5 Login nodes are created for active clusters." {
@@ -56,11 +56,11 @@ EOF
    nova show login-b  
 }
 
-@test "2.1.7 After repartinioning, the containers know to which virtual cluster they belong." {
+@test "2.1.7 After repartitioning, the containers know to which virtual cluster they belong." {
    for NODE in $(lsdef -t node vc-a -s | awk '{print $1}'); do
-      ping -c2 $NODE.vc-a
+      ping -c6 -i 10 $NODE.vc-a
    done
    for NODE in $(lsdef -t node vc-b -s | awk '{print $1}'); do
-      ping -c2 $NODE.vc-b
+      ping -c6 -i 5 $NODE.vc-b
    done
 }
