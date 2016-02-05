@@ -49,7 +49,7 @@ def format_run(run):
 
 
 def head(list):
-    if list: return list[0]
+    if list: return next(list)
 
 
 def initialize():
@@ -132,6 +132,7 @@ def run(branch, rev=None, user=None, configuration=None, tests=[], to='/var/www/
         sh.git.clone('http://github.com/clustervision/trinity')
 
     os.chdir(tmpdir+ '/trinity')
+    sh.git.pull()
     # Collect branch and/or revision information
     if rev:
         sh.git.checkout(rev)

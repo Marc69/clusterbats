@@ -19,7 +19,6 @@
 @test "4.2.0.2 -- modules freeipmi" {
    [[ -d /trinity/clustervision/CentOS/7/modulefiles/freeipmi ]] && skip
    cd /root/modules
-   cd /root/modules
    ./install-freeipmi-1.4.11.sh > /dev/null
 }
 
@@ -37,6 +36,7 @@
 
 @test "4.2.0.5 -- modules netloc" {
    [[ -d /trinity/clustervision/CentOS/7/modulefiles/netloc ]] && skip
+   module use /trinity/clustervision/CentOS/7/modulefiles
    cd /root/modules
    ./install-netloc-0.5.sh > /dev/null
 }
@@ -49,6 +49,7 @@
 
 @test "4.2.0.7 -- modules openmpi" {
    [[ -d /trinity/clustervision/CentOS/7/modulefiles/openmpi ]] && skip
+   module use /trinity/clustervision/CentOS/7/modulefiles
    cd /root/modules
    ./install-openmpi-gcc-1.10.0.sh > /dev/null
 }
