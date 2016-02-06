@@ -1,7 +1,7 @@
 #!/usr/bin/python
-
 #title          : t3po
 #description    : Test runner script for Trinity
+#                 Requires tap.py and sh to be installed using pip.
 #author         : Hans Then
 #email          : hans.then@clustervision.com
 
@@ -28,10 +28,9 @@ def cmd(*cmd):
        We do not use the sh module for this, since we 
        found that it would make some commands hang (e.g. rpower)."""
     logger.debug(cmd)
-    try:
-        return subprocess.check_output(list(cmd), stderr=subprocess.STDOUT).split('\n')
-    except subprocess.CalledProcessError, e:
-        return e.output.split('\n')
+    p = subprocess.Popen(list(cmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    for line in iter(p.stdout.readline,''):
+        yield line
 
 
 def connection():
@@ -50,7 +49,7 @@ def format_run(run):
 
 
 def head(list):
-    if list: return list[0]
+    if list: return next(list)
 
 
 def initialize():
@@ -134,6 +133,7 @@ def run(branch, rev=None, user=None, configuration=None, tests=[], to='/var/www/
         sh.git.clone('http://github.com/clustervision/trinity')
 
     os.chdir(tmpdir+ '/trinity')
+    sh.git.pull()
     # Collect branch and/or revision information
     if rev:
         sh.git.checkout(rev)
