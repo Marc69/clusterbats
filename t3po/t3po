@@ -19,7 +19,7 @@ from urlparse import urlsplit
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 def cmd(*cmd):
@@ -127,6 +127,7 @@ def run(branch, rev=None, user=None, configuration=None, tests=[], to='/var/www/
     # Setup the correct version on the master node
     tmpdir = '/tmp/t3po'
     if not os.path.exists(tmpdir + '/trinity'):
+        logger.debug("clone trinity git repo")
         if not os.path.exists(tmpdir):
             os.makedirs(tmpdir)
         os.chdir(tmpdir)
@@ -141,7 +142,9 @@ def run(branch, rev=None, user=None, configuration=None, tests=[], to='/var/www/
                           revision, branch)
     else:
         sh.git.checkout(branch)
+        sh.git.pull()
         rev = sh.git('rev-parse', 'HEAD').strip()
+    logger.debug("updating the master")
     sh.bash('update', 'master')
 
     # Write the testrun 
@@ -163,8 +166,6 @@ def run(branch, rev=None, user=None, configuration=None, tests=[], to='/var/www/
 
 def run_test(rev, test):
     """Run an individual test file"""
-    logger.error(test)
-
     url =  urlsplit(test)
     if url.scheme and url.scheme != 'ssh':
         logger.debug("Unsupported scheme in test %s", test)

@@ -9,7 +9,7 @@
         done
         # now wait a very long time
         for i in {1..30}; do
-            if ssh -o StrictHostKeyChecking=no node001 grep cv_fly_clusterbats /var/log/postinstall.log 2> /dev/null ; then
+            if ssh -o StrictHostKeyChecking=no node001 grep cv_end /var/log/postinstall.log 2> /dev/null ; then
                 break
             fi
             sleep 5m
