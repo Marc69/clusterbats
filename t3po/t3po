@@ -30,7 +30,7 @@ def cmd(*cmd):
     logger.debug(cmd)
     p = subprocess.Popen(list(cmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     for line in iter(p.stdout.readline,''):
-        yield line
+        yield line.rstrip()
 
 
 def connection():
@@ -132,7 +132,6 @@ def run(branch, rev=None, user=None, configuration=None, tests=[], to='/var/www/
         sh.git.clone('http://github.com/clustervision/trinity')
 
     os.chdir(tmpdir+ '/trinity')
-    sh.git.pull()
     # Collect branch and/or revision information
     if rev:
         sh.git.checkout(rev)
@@ -142,6 +141,7 @@ def run(branch, rev=None, user=None, configuration=None, tests=[], to='/var/www/
     else:
         sh.git.checkout(branch)
         rev = sh.git('rev-parse', 'HEAD').strip()
+    sh.git.pull()
     sh.bash('update', 'master')
 
     # Write the testrun 
