@@ -213,7 +213,7 @@ def store_tap(branch, rev, run, user, stream):
             c.execute('insert or replace into testresult ' + \
                   ' (run, rev, id, result, diagnostics) ' + \
                   'values (?,?,?,?,?)', \
-                  (run, rev, testid, result, diagnostics))
+                  (run, rev, testid, result, unicode(diagnostics, 'utf-8')))
             # attach the diagnostics lines
             conn.commit()
         if isinstance(line, tap.line.Result):
