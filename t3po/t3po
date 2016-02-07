@@ -179,7 +179,7 @@ def run_test(rev, test):
                              test, rev[:7], url.hostname, rev_remote)
                return []
            return cmd('sshpass', '-p', url.password, 'ssh', '-oLogLevel=FATAL',
-                       url.username+'@'+url.hostname, 'bats', url.path)
+                       url.username+'@'+url.hostname, 'bats',  url.path)
         else:
            rev_remote= head(cmd('ssh', '-oLogLevel=FATAL',
                             url.username+'@'+url.hostname, 'cat /trinity/version | sed -n 2p'))
