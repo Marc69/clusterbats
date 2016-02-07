@@ -18,9 +18,14 @@ load config/configuration
 }
 
 @test "1.2.1 - We can discover compute nodes" {
-  if [ -e "/tftpboot/xcat/xnba/nodes/node001" ]; then
-    skip
-  fi
+  for i in {1..2} ; do
+    for NODE in $(expand ${NODES}); do
+      if ! lsdef -t node ${NODE} | grep 'standingby\|bmcready' ; then
+        continue 2;
+      fi
+    done
+    skip "Already in standby"
+  done
   nodeadd ${NODES} groups=compute
   makehosts compute
   makedns compute > /dev/null || true
@@ -28,7 +33,7 @@ load config/configuration
 
   for i in {1..100} ; do
     for NODE in $(expand ${NODES}); do
-      if ! lsdef -t node ${NODE} | grep standingby ; then
+      if ! lsdef -t node ${NODE} | grep 'standingby\|bmcready' ; then
         sleep 10 
         continue 2;
       fi

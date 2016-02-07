@@ -6,7 +6,7 @@ load config/configuration
    http GET http://10.141.255.254:32123/trinity/v1/ | grep Welcome
 }
 
-@test "2.1.1 We can create a tenant" {
+@test "2.1.1 - We can create a tenant" {
    source /root/keystonerc_admin
    if keystone user-get b; then
       skip
@@ -24,7 +24,7 @@ export PS1='[\u@\h \W(keystone_b)]\$ '
 EOF
 }
 
-@test "2.1.3 We can remove resources from a tenant." {
+@test "2.1.3 - We can remove resources from a tenant." {
    TOKEN=$(http -b POST http://10.141.255.254:32123/trinity/v1/login \
         X-Tenant:admin \
         username=admin \
@@ -37,7 +37,7 @@ EOF
        specs:='{"default":1}' 
 }
 
-@test "2.1.4 We can allocate resources to a tenant." {
+@test "2.1.4 - We can allocate resources to a tenant." {
    TOKEN=$(http -b POST http://10.141.255.254:32123/trinity/v1/login \
         X-Tenant:admin \
         username=admin \
@@ -51,12 +51,12 @@ EOF
        specs:='{"default":1}' 
 }
 
-@test "2.1.5 Login nodes are created for active clusters." {
+@test "2.1.5 - Login nodes are created for active clusters." {
    source /root/keystonerc_b
    nova show login-b  
 }
 
-@test "2.1.7 After repartitioning, the containers know to which virtual cluster they belong." {
+@test "2.1.7 - After repartitioning, the containers know to which virtual cluster they belong." {
    for NODE in $(lsdef -t node vc-a -s | awk '{print $1}'); do
       ping -c6 -i 10 $NODE.vc-a
    done
