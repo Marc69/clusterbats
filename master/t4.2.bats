@@ -2,14 +2,11 @@ load common
 @test "4.2.0.0 -- Download modules" {
    lsb_release
    module avail
-   [[ -d /root/modules ]] 
-   cd /root
-
    osname=$(lsb_release -si)
    osmajorver=$(lsb_release -sr | cut -d. -f1)
-
    mkdir -p /trinity/clustervision/${osname}/${osmajorver}
-   git clone ssh://git@github.com/clustervision/modules 
+   cd /root
+   [[ -d /root/modules ]] || git clone http://github.com/clustervision/modules
 }
 
 @test "4.2.0.1 -- modules gcc" {
@@ -50,7 +47,6 @@ load common
 }
 
 @test "4.2.0.7 -- modules openmpi" {
-   debug "This was it"
    [[ -d /trinity/clustervision/CentOS/7/modulefiles/openmpi ]] && skip
    module use /trinity/clustervision/CentOS/7/modulefiles
    cd /root/modules
