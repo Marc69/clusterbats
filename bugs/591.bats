@@ -1,5 +1,3 @@
-load ../clusterbats/configuration
-
 @test "#591 login node hostname changes after controller reboot" {
   source /root/keystonerc_a
   nova reboot login-a

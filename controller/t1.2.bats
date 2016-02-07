@@ -26,6 +26,7 @@ load config/configuration
     done
     skip "Already in standby"
   done
+  rmnodecfg ${NODES} || true
   nodeadd ${NODES} groups=compute
   makehosts compute
   makedns compute > /dev/null || true
