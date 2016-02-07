@@ -89,7 +89,7 @@ load config/configuration
    if ! grep cv_setup_xcatdb /var/log/postinstall.log; then
        skip "xcatdb is not configured to run from mariadb"
    fi
-   [[ -f /etc/xcat/cfglog ]]
+   [[ -f /etc/xcat/cfgloc ]]
    grep mysql /etc/xcat/cfgloc
    systemctl restart xcatd
    tabdump site
