@@ -60,7 +60,7 @@ EOF
   makehosts vc-a
   makedns vc-a > /dev/null || true
 
-# This is test 1.2.3 in the test sheet
+  # This is test 1.2.3 in the test sheet
   nodeset ${NODES} osimage=centos7-x86_64-netboot-trinity
   rpower $NODES reset
   systemctl restart trinity_api

@@ -1,8 +1,10 @@
-@test "4.2.0.0 -- Download modules script" {
-   [[ -d /root/modules ]] && skip
+load common
+@test "4.2.0.0 -- Download modules" {
+   lsb_release
+   module avail
+   [[ -d /root/modules ]] 
    cd /root
-   # FIXME: this needs a password
-   yum -y -q redhat-lsb environment-modules
+
    osname=$(lsb_release -si)
    osmajorver=$(lsb_release -sr | cut -d. -f1)
 
@@ -48,6 +50,7 @@
 }
 
 @test "4.2.0.7 -- modules openmpi" {
+   debug "This was it"
    [[ -d /trinity/clustervision/CentOS/7/modulefiles/openmpi ]] && skip
    module use /trinity/clustervision/CentOS/7/modulefiles
    cd /root/modules

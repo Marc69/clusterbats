@@ -30,7 +30,7 @@ def cmd(*cmd):
     logger.debug(cmd)
     p = subprocess.Popen(list(cmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     for line in iter(p.stdout.readline,''):
-        yield line
+        yield line.rstrip()
 
 
 def connection():
@@ -133,8 +133,8 @@ def run(branch, rev=None, user=None, configuration=None, tests=[], to='/var/www/
         sh.git.clone('http://github.com/clustervision/trinity')
 
     os.chdir(tmpdir+ '/trinity')
-    sh.git.pull()
     # Collect branch and/or revision information
+    sh.git.pull()
     if rev:
         sh.git.checkout(rev)
         if branch != sh.git('rev-parse', '--abbrev-ref', 'HEAD').strip():
@@ -180,7 +180,7 @@ def run_test(rev, test):
                              test, rev[:7], url.hostname, rev_remote)
                return []
            return cmd('sshpass', '-p', url.password, 'ssh', '-oLogLevel=FATAL',
-                       url.username+'@'+url.hostname, 'bats', url.path)
+                       url.username+'@'+url.hostname, 'bats',  url.path)
         else:
            rev_remote= head(cmd('ssh', '-oLogLevel=FATAL',
                             url.username+'@'+url.hostname, 'cat /trinity/version | sed -n 2p'))
