@@ -3,7 +3,7 @@ load config/configuration
 @test "Trinity Api is running" {
    pip install httpie > /dev/null 2>&1
    yum -y install jq
-   http GET http://10.141.255.254:32123/trinity/v1/ | grep Welcome
+   http --ignore-stdin GET http://10.141.255.254:32123/trinity/v1/ | grep Welcome
 }
 
 @test "2.1.1 We can create a tenant" {
@@ -25,26 +25,26 @@ EOF
 }
 
 @test "2.1.3 We can remove resources from a tenant." {
-   TOKEN=$(http -b POST http://10.141.255.254:32123/trinity/v1/login \
+   TOKEN=$(http --ignore-stdin -b POST http://10.141.255.254:32123/trinity/v1/login \
         X-Tenant:admin \
         username=admin \
         password=system \
         | jq --raw-output '.token')
 
-   http --check-status PUT http://10.141.255.254:32123/trinity/v1/clusters/a \
+   http --ignore-stdin --check-status PUT http://10.141.255.254:32123/trinity/v1/clusters/a \
        X-Tenant:admin \
        X-Auth-Token:$TOKEN \
        specs:='{"default":1}' 
 }
 
 @test "2.1.4 We can allocate resources to a tenant." {
-   TOKEN=$(http -b POST http://10.141.255.254:32123/trinity/v1/login \
+   TOKEN=$(http --ignore-stdin -b POST http://10.141.255.254:32123/trinity/v1/login \
         X-Tenant:admin \
         username=admin \
         password=system \
         | jq --raw-output '.token')
 
-   http --check-status --timeout 120 \
+   http --ignore-stdin --check-status --timeout 120 \
        PUT http://10.141.255.254:32123/trinity/v1/clusters/b \
        X-Tenant:admin \
        X-Auth-Token:$TOKEN \
