@@ -3,10 +3,10 @@ load config/configuration
 @test "Trinity Api is running" {
    pip install httpie > /dev/null 2>&1
    yum -y install jq
-   http GET http://10.141.255.254:32123/trinity/v1/ | grep Welcome
+   http --ignore-stdin GET http://10.141.255.254:32123/trinity/v1/ | grep Welcome
 }
 
-@test "2.1.1 We can create a tenant" {
+@test "2.1.1 - We can create a tenant" {
    source /root/keystonerc_admin
    if keystone user-get b; then
       skip
@@ -24,39 +24,39 @@ export PS1='[\u@\h \W(keystone_b)]\$ '
 EOF
 }
 
-@test "2.1.3 We can remove resources from a tenant." {
-   TOKEN=$(http -b POST http://10.141.255.254:32123/trinity/v1/login \
+@test "2.1.3 - We can remove resources from a tenant." {
+   TOKEN=$(http --ignore-stdin -b POST http://10.141.255.254:32123/trinity/v1/login \
         X-Tenant:admin \
         username=admin \
         password=system \
         | jq --raw-output '.token')
 
-   http --check-status PUT http://10.141.255.254:32123/trinity/v1/clusters/a \
+   http --ignore-stdin --check-status PUT http://10.141.255.254:32123/trinity/v1/clusters/a \
        X-Tenant:admin \
        X-Auth-Token:$TOKEN \
        specs:='{"default":1}' 
 }
 
-@test "2.1.4 We can allocate resources to a tenant." {
-   TOKEN=$(http -b POST http://10.141.255.254:32123/trinity/v1/login \
+@test "2.1.4 - We can allocate resources to a tenant." {
+   TOKEN=$(http --ignore-stdin -b POST http://10.141.255.254:32123/trinity/v1/login \
         X-Tenant:admin \
         username=admin \
         password=system \
         | jq --raw-output '.token')
 
-   http --check-status --timeout 120 \
+   http --ignore-stdin --check-status --timeout 120 \
        PUT http://10.141.255.254:32123/trinity/v1/clusters/b \
        X-Tenant:admin \
        X-Auth-Token:$TOKEN \
        specs:='{"default":1}' 
 }
 
-@test "2.1.5 Login nodes are created for active clusters." {
+@test "2.1.5 - Login nodes are created for active clusters." {
    source /root/keystonerc_b
    nova show login-b  
 }
 
-@test "2.1.7 After repartitioning, the containers know to which virtual cluster they belong." {
+@test "2.1.7 - After repartitioning, the containers know to which virtual cluster they belong." {
    for NODE in $(lsdef -t node vc-a -s | awk '{print $1}'); do
       ping -c6 -i 10 $NODE.vc-a
    done

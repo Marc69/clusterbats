@@ -1,13 +1,12 @@
-@test "4.2.0.0 -- Download modules script" {
-   [[ -d /root/modules ]] && skip
-   cd /root
-   # FIXME: this needs a password
-   yum -y -q redhat-lsb environment-modules
+load common
+@test "4.2.0.0 -- Download modules" {
+   lsb_release
+   module avail
    osname=$(lsb_release -si)
    osmajorver=$(lsb_release -sr | cut -d. -f1)
-
    mkdir -p /trinity/clustervision/${osname}/${osmajorver}
-   git clone ssh://git@github.com/clustervision/modules 
+   cd /root
+   [[ -d /root/modules ]] || git clone http://github.com/clustervision/modules
 }
 
 @test "4.2.0.1 -- modules gcc" {
