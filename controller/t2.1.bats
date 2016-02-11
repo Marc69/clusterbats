@@ -20,7 +20,7 @@ export OS_TENANT_NAME=b
 export OS_PASSWORD=system
 export OS_AUTH_URL=http://10.141.255.254:5000/v2.0/
 export OS_REGION_NAME=regionOne
-export PS1='[\u@\h \W(keystone_b)]\$ '
+export PS1='[\u@\h \W(keystone_b)]\\$ '
 EOF
 }
 
