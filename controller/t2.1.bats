@@ -34,7 +34,7 @@ EOF
    http --check-status PUT http://10.141.255.254:32123/trinity/v1/clusters/a \
        X-Tenant:admin \
        X-Auth-Token:$TOKEN \
-       specs:='{"default":2}' 
+       specs:='{"default":0}' 
 }
 
 @test "2.1.4 We can allocate resources to a tenant." {
