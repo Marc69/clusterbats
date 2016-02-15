@@ -17,10 +17,12 @@ load config/configuration
   ping -c 1 switch &> /dev/null 
 }
 
+@test "1.2.0.1 - The dhcp server is running" {
+  systemctl status dhcpd
+}
+
 @test "1.2.1 - We can discover compute nodes" {
-  if [ -e "/tftpboot/xcat/xnba/nodes/node001" ]; then
-    skip
-  fi
+  rmnodecfg ${NODES} || true
   nodeadd ${NODES} groups=compute
   makehosts compute
   makedns compute > /dev/null || true
@@ -28,7 +30,7 @@ load config/configuration
 
   for i in {1..100} ; do
     for NODE in $(expand ${NODES}); do
-      if ! lsdef -t node ${NODE} | grep standingby ; then
+      if ! lsdef -t node ${NODE} | grep 'standingby\|bmcready' ; then
         sleep 10 
         continue 2;
       fi
@@ -41,9 +43,15 @@ load config/configuration
 }
 
 @test "1.2.5 - We can assign the containers to the default virtual cluster a" {
-  if lsdef -t node node001 | grep booted; then
+  for i in {1..2} ; do
+    for NODE in $(expand ${NODES}); do
+      if ! ssh $NODE docker ps 2>/dev/null | grep trinity; then
+        break 2;
+      fi
+    done
     skip
-  fi
+    break
+  done
 
   CPUs=$(lsdef -t node -o node001 -i cpucount | grep cpucount | cut -d= -f2)
   cat > /cluster/vc-a/etc/slurm/slurm-nodes.conf << EOF
@@ -55,7 +63,7 @@ EOF
   makehosts vc-a
   makedns vc-a > /dev/null || true
 
-# This is test 1.2.3 in the test sheet
+  # This is test 1.2.3 in the test sheet
   nodeset ${NODES} osimage=centos7-x86_64-netboot-trinity
   rpower $NODES reset
   systemctl restart trinity_api

@@ -85,6 +85,16 @@ load config/configuration
    openstack-status | grep memcached | grep -w active
 }
 
+@test "1.1.22 - Check that xcat configuration is stored in the mariadb container" {
+   if ! grep cv_setup_xcatdb /var/log/postinstall.log; then
+       skip "xcatdb is not configured to run from mariadb"
+   fi
+   [[ -f /etc/xcat/cfgloc ]]
+   grep mysql /etc/xcat/cfgloc
+   systemctl restart xcatd
+   tabdump site
+}
+
 @test "The controller hosts an openstack image -- can be removed" {
    # Can be removed
    tabdump osimage | grep "centos7-x86_64-install-openstack"

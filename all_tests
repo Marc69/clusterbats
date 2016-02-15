@@ -1,0 +1,8 @@
+./master/t1.1.bats
+./master/t4.2.bats
+ssh://root@node001/root/clusterbats/controller/t1.1.bats
+ssh://root@node001/root/clusterbats/controller/t1.2.bats
+ssh://root@node001/root/clusterbats/controller/t2.1.bats
+ssh://root@node001/root/clusterbats/controller/t2.2.bats
+ssh://root@node001/root/clusterbats/controller/t3.2.bats
+ssh://root@node001/root/clusterbats/bugs

@@ -1,0 +1,43 @@
+body {
+    background-color: white;
+}
+
+th {
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+tr:first-child th {
+    max-width: 80px;
+}
+
+td {
+    text-align: center;
+}
+
+td.FAIL {
+    background-color: red;
+}
+
+td.PASS {
+    background-color: lawngreen;
+}
+
+td.SKIP {
+    background-color: yellow;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid gray;
+}
+
+th {
+    white-space: nowrap;
+    padding: 2px;
+}
+
