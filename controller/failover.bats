@@ -2,7 +2,7 @@
 load config/configuration
 
 @test "6.2.0 - Check pacemaker is installed" {
-    pcs
+    pcs -h
 }
 
 @test "6.2.0.1 - Check sentinel is configured" {
@@ -21,6 +21,10 @@ load config/configuration
 }
 
 @test "6.2.1 - Check failover" {
+    # Check if both nodes are active
+    pcs cluster status | grep Online | grep controller-1.cluster | grep controller-1.cluster
+    
+    # Ok continue
     active=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
     pcs cluster standby $active
     while :; do
