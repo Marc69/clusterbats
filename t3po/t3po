@@ -99,7 +99,7 @@ def report(to='/var/www/html/index.html'):
 
     with open(to, 'w') as file:
         c = conn.cursor()
-        c.execute('select * from testrun order by run, branch')
+        c.execute('select * from testrun order by run desc, branch')
         print >>file, '<html>' 
         print >>file, '<head>'
         print >>file, '<link rel="stylesheet" type="text/css" href="t3po.css">'
