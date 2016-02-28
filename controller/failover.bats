@@ -2,7 +2,7 @@
 load config/configuration
 
 @test "6.2.0 - Check pacemaker is installed" {
-    pcs
+    pcs -h
 }
 
 @test "6.2.0.1 - Check sentinel is configured" {
@@ -11,8 +11,8 @@ load config/configuration
 
 @test "6.2.0.2 - See if the cluster stabilizes" {
     for i in {1..20}; do
-        if (pcs resource | grep sentinel | grep Started) && \
-           (drbd-overview | grep UpToDate/UpToDate); then
+        if (pcs resource | grep sentinel | grep Started > /dev/null) && \
+           (drbd-overview | grep UpToDate/UpToDate > /dev/null); then
             return 0;
         fi
         sleep 5
