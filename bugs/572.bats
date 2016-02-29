@@ -1,6 +1,4 @@
-load ../clusterbats/configuration
-
-@test "#572 dockerized mariadb is unreliable" {
+@test "bug 572 - dockerized mariadb is unreliable" {
   source /root/keystonerc_a
   # make sure that after a restart of mariadb
   # nova is still accessible
@@ -10,5 +8,6 @@ load ../clusterbats/configuration
     sleep 2
     (nova list | grep login-a) || exit
   done
+  systemctl start nova-controller keystone glance
 }
 

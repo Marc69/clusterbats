@@ -32,9 +32,6 @@ load config/configuration
 @test "1.1.10 - The timezone is set correctly" {
   date | grep $TIMEZONE
 }
-@test "1.1.11.0 - The timezone is set correctly in the site table" {
-  tabdump site | grep -i timezone | grep $TIMEZONE
-}
 
 @test "1.1.12 - Hostname is set correctly" {
    [ "$HOSTNAME" = controller.cluster ] 
@@ -50,6 +47,10 @@ load config/configuration
 
 @test "1.1.15 - DNS is working on the controller" {
    host controller localhost
+}
+
+@test "1.1.16.0 - The timezone is set correctly in the site table" {
+  tabdump site | grep -i timezone | grep $TIMEZONE
 }
 
 @test "1.1.17 - Openvswitch is available" {
@@ -82,6 +83,16 @@ load config/configuration
    openstack-status | grep openstack-dashboard | grep -w active
    openstack-status | grep dbus | grep -w active
    openstack-status | grep memcached | grep -w active
+}
+
+@test "1.1.22 - Check that xcat configuration is stored in the mariadb container" {
+   if ! grep cv_setup_xcatdb /var/log/postinstall.log; then
+       skip "xcatdb is not configured to run from mariadb"
+   fi
+   [[ -f /etc/xcat/cfgloc ]]
+   grep mysql /etc/xcat/cfgloc
+   systemctl restart xcatd
+   tabdump site
 }
 
 @test "The controller hosts an openstack image -- can be removed" {
