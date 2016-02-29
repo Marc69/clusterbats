@@ -22,7 +22,18 @@ load config/configuration
 }
 
 @test "1.2.1 - We can discover compute nodes" {
-  rmnodecfg ${NODES} || true
+  for i in {1..2} ; do
+    for NODE in $(expand ${NODES}); do
+      if ! ssh $NODE docker ps 2>/dev/null | grep trinity; then
+        break 2;
+      fi
+    done
+    skip
+    break
+  done
+
+  rmnodecfg compute || true
+  rmdef compute || true
   nodeadd ${NODES} groups=compute
   makehosts compute
   makedns compute > /dev/null || true

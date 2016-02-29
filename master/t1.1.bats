@@ -16,14 +16,12 @@ load common
      
 }
 
-
-
 @test "1.1.0 - install controller" {
     if [[ "$(cat /trinity/version)" = $(ssh -o StrictHostKeyChecking=no node001 cat /trinity/version) ]]; then
         skip
     else
-        nodeset node001 osimage=
-        rpower node001 reset
+        nodeset compute osimage=
+        rpower compute reset
         while ! nodestat node001 | grep noping 2> /dev/null ; do
             sleep 1s
         done
