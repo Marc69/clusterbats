@@ -1,4 +1,4 @@
-#!/user/env/bin/bats
+#!/usr/env/bin/bats
 load config/configuration
 
 @test "1.2.0.0 - We can configure the switch" {
