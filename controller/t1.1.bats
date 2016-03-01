@@ -34,7 +34,7 @@ load config/configuration
 }
 
 @test "1.1.12 - Hostname is set correctly" {
-   [ "$HOSTNAME" = controller.cluster ] 
+   hostname | grep 'controller'[\-]*[1-3]*
 }
 
 @test "1.1.13 - The controller node is setup to user LDAP for authentication" {
