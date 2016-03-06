@@ -72,7 +72,8 @@ load config/configuration
    docker ps | grep glance | grep -i up
    docker ps | grep keystone | grep -i up
    docker ps | grep rabbitmq | grep -i up
-   docker ps | grep mariadb | grep -i up
+   (docker ps | grep mariadb | grep -i up) || \
+   (docker ps | grep galera | grep -i up) 
 }
 
 @test "1.1.21 - the appropriate openstack services are active" {
