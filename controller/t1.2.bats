@@ -4,8 +4,10 @@ load config/configuration
 @test "- 1.2.0.0 - We can configure the switch" {
   # t1.1.19 in test sheet
   chtab node=switch hosts.ip=${SWITCH} # from configuration
-
-
+  echo "${SWITCH_TABLE}" > /tmp/switch.csv
+  tabrestore /tmp/switch.csv
+  makehosts switch
+  makedns switch || true
   #------------------------------------------
   # do a switch ping test before proceeding
   #------------------------------------------
@@ -23,12 +25,12 @@ load config/configuration
         break 2;
       fi
     done
-    skip
+    skip "All nodes are running trinity"
     break
   done
 
-  rmnodecfg $(expand ${NODES}) || true
-  rmdef $(expand ${NODES}) || true
+  #rmnodecfg $(expand ${NODES}) || true
+  #rmdef $(expand ${NODES}) || true
   nodeadd ${NODES} groups=compute
   makehosts compute
   makedns compute > /dev/null || true
