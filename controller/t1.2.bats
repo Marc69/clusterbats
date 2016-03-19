@@ -32,8 +32,8 @@ load config/configuration
     break
   done
 
-  rmnodecfg compute || true
-  rmdef compute || true
+  rmnodecfg $(expand ${NODES}) || true
+  rmdef $(expand ${NODES}) || true
   nodeadd ${NODES} groups=compute
   makehosts compute
   makedns compute > /dev/null || true
