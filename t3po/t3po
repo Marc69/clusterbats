@@ -248,5 +248,5 @@ if __name__ == '__main__':
     if args.log:
         logger.setLevel(args.log)
 
-    #run(tests=args.files)
-    report()
+    run(tests=args.files)
+    #report()
