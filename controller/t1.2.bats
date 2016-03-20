@@ -4,8 +4,10 @@ load config/configuration
 @test "- 1.2.0.0 - We can configure the switch" {
   # t1.1.19 in test sheet
   chtab node=switch hosts.ip=${SWITCH} # from configuration
-
-
+  echo "${SWITCH_TABLE}" > /tmp/switch.csv
+  tabrestore /tmp/switch.csv
+  makehosts switch
+  makedns switch || true
   #------------------------------------------
   # do a switch ping test before proceeding
   #------------------------------------------
@@ -17,38 +19,25 @@ load config/configuration
 }
 
 @test "- 1.2.1 - We can discover compute nodes" {
-  for i in {1..2} ; do
-    for NODE in $(expand ${NODES}); do
-      if ! ssh $NODE docker ps 2>/dev/null | grep trinity; then
-        break 2;
-      fi
-    done
-    #skip
-  done
-
-  rmnodecfg compute || true
-  rmdef compute || true
-  echo "${SWITCH_TABLE}" > /tmp/switch.csv
-  tabrestore /tmp/switch.csv
-  makehosts switch
-  makedns switch || true
+  rmnodecfg $(expand ${NODES}) || true
+  #rmdef $(expand ${NODES}) || true
   nodeadd ${NODES} groups=compute
   makehosts compute
   makedns compute > /dev/null || true
   rpower compute reset
+  sleep 5
 
   for i in {1..100} ; do
     for NODE in $(expand ${NODES}); do
-      if ! lsdef -t node ${NODE} | grep 'standingby\|bmcready' ; then
+      if ! lsdef -t node ${NODE} | grep 'mac=' ; then
         sleep 10 
         continue 2;
       fi
     done
-    # trigger the timeout condition
-    [[ "$i" -ne 100 ]] 
-    sleep 5
     break
   done
+  # trigger the timeout condition
+  [[ "$i" -ne 100 ]] 
 }
 
 @test "- 1.2.3 - We can netboot trinity images on the compute nodes" {
@@ -64,8 +53,6 @@ load config/configuration
   rpower $NODES reset
   systemctl restart trinity-api
 
-  # wait until the nodes are booted and trinity is started
-  #while : ; do
   for i in {1..100} ; do
     for NODE in $(expand ${NODES}); do
       if ! ssh $NODE docker ps 2>/dev/null | grep trinity; then
@@ -74,10 +61,10 @@ load config/configuration
       fi
     done
     # trigger the timeout condition
-    [[ "$i" -ne 100 ]] 
     sleep 5
     break
   done
+  [[ "$i" -ne 100 ]] 
 }
 
 @test "1.2.5 - We can assign the containers to the default virtual cluster a" {
