@@ -136,7 +136,6 @@ def report(to='/var/www/html/index.html'):
                          (run, id))
                 r = c.fetchone()
                 if r:
-                    print `r[4]`
                     print >>file, '<td class="%s" title="%s">%s</td>' % (r[3].lower(), escape(r[4]).encode('ascii', 'ignore'), r[3])
                 else:
                     print >>file, '<td> </td>'
