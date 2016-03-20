@@ -42,6 +42,11 @@ def connection():
         detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
 
 
+def escape(html):
+    """Returns the given HTML with ampersands, quotes and carets encoded."""
+    return html.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;')
+
+
 def format_run(run):
     """Format a run into the header of the table"""
     date, branch, rev, _, _ = run
@@ -131,7 +136,8 @@ def report(to='/var/www/html/index.html'):
                          (run, id))
                 r = c.fetchone()
                 if r:
-                    print >>file, '<td class="%s">%s</td>' % (r[3].lower(), r[3])
+                    print `r[4]`
+                    print >>file, '<td class="%s" title="%s">%s</td>' % (r[3].lower(), escape(r[4]).encode('ascii', 'ignore'), r[3])
                 else:
                     print >>file, '<td> </td>'
             print >>file, '</tr>'
@@ -242,4 +248,5 @@ if __name__ == '__main__':
     if args.log:
         logger.setLevel(args.log)
 
-    run(tests=args.files)
+    #run(tests=args.files)
+    report()
