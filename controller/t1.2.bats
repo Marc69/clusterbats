@@ -23,8 +23,7 @@ load config/configuration
         break 2;
       fi
     done
-    skip
-    break
+    #skip
   done
 
   rmnodecfg compute || true
@@ -59,8 +58,7 @@ load config/configuration
         break 2;
       fi
     done
-    skip
-    break
+    #skip
   done
   nodeset ${NODES} osimage=centos7-x86_64-netboot-trinity
   rpower $NODES reset
