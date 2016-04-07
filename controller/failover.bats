@@ -22,7 +22,7 @@ load config/configuration
 
 @test "6.2.1 - Check failover" {
     # Check if both nodes are active
-    pcs cluster status | grep Online | grep controller-1.cluster | grep controller-1.cluster
+    pcs cluster status | grep Online | grep controller-1.cluster | grep controller-2.cluster
     
     # Ok continue
     active=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
@@ -44,10 +44,13 @@ load config/configuration
 
 @test "6.2.1.0 - Check stickyness" { 
     current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
+    debug echo $current
     standby=$(pcs cluster status | grep standby | awk -F: '{ print $1 }' | awk '{ print $2 }')
     pcs cluster unstandby $standby
-    sleep 10
+    sleep 30
 
     active=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
-    [[ $active = $current ]]
+    debug echo $current
+    debug echo $active
+    [[ $'active' = $'current' ]]
 }

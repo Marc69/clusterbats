@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Modules
+module load gcc/4.9.3
+module load openblas/gcc/0.2.15
+module load hwloc/gcc/1.11.2
+module load openmpi/gcc/1.10.2
+

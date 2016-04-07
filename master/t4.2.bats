@@ -52,3 +52,11 @@ load common
    cd /root/modules
    ./install-openmpi-gcc-1.10.0.sh > /dev/null
 }
+
+@test "4.2.0.8 -- modules netlib-hpl" {
+   [[ -d /trinity/clustervision/CentOS/7/modulefiles/netlib-hpl ]] && skip
+   module use /trinity/clustervision/CentOS/7/modulefiles
+   cd /root/modules
+   ./install-netlib-hpl-2.2.sh > /dev/null
+}
+

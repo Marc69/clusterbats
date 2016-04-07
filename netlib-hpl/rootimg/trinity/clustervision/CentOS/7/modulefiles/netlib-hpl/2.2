@@ -1,0 +1,36 @@
+#%Module
+#
+# @name:    netlib-hpl
+# @version: 2.2
+#
+
+# Customize the output of `module help` command
+# ---------------------------------------------
+proc ModulesHelp { } {
+   puts stderr "\tAdds Netlib HPL to your environment variables"
+   puts stderr "\t\t\$PATH, \$MANPATH"
+}
+
+# Customize the output of `module whatis` command
+# -----------------------------------------------
+module-whatis   "loads the [module-info name] environment"
+
+# Define internal modulefile variables (Tcl script use only)
+# ----------------------------------------------------------
+set   name      netlib-hpl
+set   version   2.2
+set   prefix    /cluster/apps/${name}/${version}
+
+# Check if the path exists before modifying environment
+# -----------------------------------------------------
+if {![file exists $prefix]} {
+   puts stderr "\t[module-info name] Load Error: $prefix does not exist"
+   break
+   exit 1
+}
+
+# Update common variables in the environment
+# ------------------------------------------
+setenv         HPL_DIR   $prefix/bin
+prepend-path   PATH      $prefix/bin
+
