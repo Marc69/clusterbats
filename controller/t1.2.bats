@@ -18,6 +18,10 @@ load config/configuration
   systemctl status dhcpd
 }
 
+@test "- 1.2.0.2 - Check if hostlist is installed" {
+  [ -x "$(which hostlist)" ]
+}
+
 @test "- 1.2.1 - We can discover compute nodes" {
   rmnodecfg $(expand ${NODES}) || true
   #rmdef $(expand ${NODES}) || true
@@ -55,7 +59,7 @@ load config/configuration
 
   for i in {1..100} ; do
     for NODE in $(expand ${NODES}); do
-      if ! ssh $NODE docker ps 2>/dev/null | grep trinity; then
+      if ! ssh $NODE systemctl status trinity; then
         sleep 10 
         continue 2;
       fi
@@ -67,7 +71,7 @@ load config/configuration
   [[ "$i" -ne 100 ]] 
 }
 
-@test "1.2.5 - We can assign the containers to the default virtual cluster a" {
+@test "- 1.2.5 - We can assign the containers to the default virtual cluster a" {
   CPUs=$(lsdef -t node -o node001 -i cpucount | grep cpucount | cut -d= -f2)
   touch /cluster/vc-a/etc/slurm/slurm-nodes.conf
   cat > /cluster/vc-a/etc/slurm/slurm-nodes.conf << EOF
@@ -81,15 +85,15 @@ EOF
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl restart slurm
 }
 
-@test "1.2.6 - There is a virtual login node" {
+@test "- 1.2.6 - There is a virtual login node" {
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a date
 }
 
-@test "1.2.7 - Slurm and munge are running on the virtual login nodes" {
+@test "- 1.2.7 - Slurm and munge are running on the virtual login nodes" {
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl status slurm
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl status munge
 }
 
-@test "1.2.8 - The compute nodes can connect to the internet" {
+@test "- 1.2.8 - The compute nodes can connect to the internet" {
   ssh -o StrictHostKeyChecking=no node001 ping -c5 8.8.8.8
 }
