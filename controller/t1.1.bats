@@ -100,6 +100,4 @@ load config/configuration
    # Can be removed
    tabdump osimage | grep "centos7-x86_64-install-openstack"
 }
-
-#@test "The controller has postscripts for the addition of the trinity api and dashboard"
    
