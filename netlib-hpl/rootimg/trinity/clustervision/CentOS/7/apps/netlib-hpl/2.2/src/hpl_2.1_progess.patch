@@ -1,0 +1,47 @@
+--- src/pgesv/HPL_pdgesv0_bak.c	2012-10-26 16:59:45.000000000 +0200
++++ src/pgesv/HPL_pdgesv0.c	2013-10-15 15:09:18.000000000 +0200
+@@ -98,6 +98,15 @@
+    HPL_T_UPD_FUN              HPL_pdupdate;
+    int                        N, j, jb, n, nb, tag=MSGID_BEGIN_FACT,
+                               test=HPL_KEEP_TESTING;
++/*
++ * ADD BY CEDRIC - TIMING 
++ */
++   #define dclock dsecnd_
++   extern double dclock();
++   double start_time= dclock(), dprint=.005;
++   double timer, mflops, dtmp, dtmp1;
++   int myrow=GRID->myrow, mycol=GRID->mycol;
++
+ /* ..
+  * .. Executable Statements ..
+  */
+@@ -118,6 +127,28 @@
+  */
+    for( j = 0; j < N; j += nb )
+    {
++/*
++ * ADD BY CEDRIC - TIMING 
++ */
++      if ( j > dprint*N )
++      {
++         timer = dclock() - start_time;
++         dtmp = (double) N;
++         dtmp1 = (double)(N-j);
++         mflops = 2.0*(dtmp*dtmp*dtmp-dtmp1*dtmp1*dtmp1)/3.0;
++         mflops = mflops / (1000000.0*timer);
++         if ( myrow==0 && mycol==0 )
++            printf("Column=%06d Fraction=%4.3f Mflops=%8.2f\n",j,dprint,mflops);
++         fflush(NULL);
++         if ( dprint < .495 ) {
++            dprint += 0.005;
++         } else if( dprint < .695) {
++            dprint += 0.02;
++         } else {
++            dprint += 0.1;
++         }
++      }
++
+       n = N - j; jb = Mmin( n, nb );
+ /*
+  * Release panel resources - re-initialize panel data structure

@@ -21,12 +21,13 @@ load common
     if [[ "$(cat /trinity/version)" = $(ssh -o StrictHostKeyChecking=no node001 cat /trinity/version) ]]; then
         skip
     else
-        nodeset node001 osimage=
-        rpower node001 reset
+        nodeset compute osimage=
+        rpower compute reset
+        debug "node001 restarted @ $(date)"
         while ! nodestat node001 | grep noping 2> /dev/null ; do
             sleep 1s
         done
-        debug "node001 is up"
+        debug "node001 is up @ $(date)"
         # now wait a very long time
         for i in {30..0}; do
             if ssh -o StrictHostKeyChecking=no node001 grep cv_end /var/log/postinstall.log 2> /dev/null ; then

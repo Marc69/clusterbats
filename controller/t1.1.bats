@@ -34,7 +34,7 @@ load config/configuration
 }
 
 @test "1.1.12 - Hostname is set correctly" {
-   [ "$HOSTNAME" = controller.cluster ] 
+   hostname | grep 'controller'[\-]*[1-3]*
 }
 
 @test "1.1.13 - The controller node is setup to user LDAP for authentication" {
@@ -72,7 +72,8 @@ load config/configuration
    docker ps | grep glance | grep -i up
    docker ps | grep keystone | grep -i up
    docker ps | grep rabbitmq | grep -i up
-   docker ps | grep mariadb | grep -i up
+   (docker ps | grep mariadb | grep -i up) || \
+   (docker ps | grep galera | grep -i up) 
 }
 
 @test "1.1.21 - the appropriate openstack services are active" {
