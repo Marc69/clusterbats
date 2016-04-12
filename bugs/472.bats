@@ -1,4 +1,4 @@
-@test "bug 473 - After deploying a controller the repositories need to be cleaned" {
+@test "bug 472 - After deploying a controller the repositories need to be cleaned" {
   ! grep -A 1 'baseurl=http://192.168.1.254' /etc/yum.repos.d/*.repo | grep 'enabled=1'
 
   # same on compute nodes
