@@ -10,15 +10,26 @@ load config/configuration
 }
 
 @test "6.2.0.2 - See if the cluster stabilizes" {
-    for i in {1..20}; do
+    for i in {30..0}; do
         if (pcs resource | grep sentinel | grep Started > /dev/null) && \
            (drbd-overview | grep UpToDate/UpToDate > /dev/null); then
             return 0;
         fi
-        sleep 5
+        sleep 1m 
     done
     return 1;
 }
+
+@test "6.2.0.3 - Check DNS configuration" {
+    ssh controller-1.cluster cat /etc/named.conf | grep xcat_key
+    ssh controller-2.cluster cat /etc/named.conf | grep xcat_key
+}
+
+@test "6.2.0.4 - Check replicator service" {
+    ssh controller-1.cluster systemctl status replicator.timer | grep "Active: active"
+    ssh controller-2.cluster systemctl status replicator.timer | grep "Active: active"
+}
+
 
 @test "6.2.1 - Check failover" {
     # Check if both nodes are active
@@ -33,12 +44,13 @@ load config/configuration
         fi
         sleep 5
     done
-    while :; do
+    for i in {30..0}; do
         if pcs resource | grep sentinel | grep Started; then
             break
         fi
-        sleep 5
+        sleep 10
     done
+    [[ $i != 0 ]]
     pcs resource | grep sentinel | grep Started | grep -v $active
 }
 
@@ -47,10 +59,21 @@ load config/configuration
     debug echo $current
     standby=$(pcs cluster status | grep standby | awk -F: '{ print $1 }' | awk '{ print $2 }')
     pcs cluster unstandby $standby
-    sleep 30
+    sleep 10 
+    while :; do
+        if pcs status | grep ^Online: | grep $standby; then
+            break
+        fi
+        sleep 5
+    done
 
     active=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
     debug echo $current
     debug echo $active
-    [[ $'active' = $'current' ]]
+    [[ ${active} = ${current} ]]
+}
+@test "6.2.1.1 - Check DNS after failover" { 
+    host controller.cluster controller.cluster
+    host controller-1.cluster controller.cluster
+    host login.vc-a controller.cluster
 }

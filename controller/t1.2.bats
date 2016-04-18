@@ -80,8 +80,7 @@ PartitionName=containers State=UP Nodes=$CONTAINERS Default=YES
 EOF
   nodeadd $CONTAINERS groups=vc-a,hw-default
   makehosts vc-a
-  makedns vc-a > /dev/null || true
-
+  makedns -n > /dev/null || true
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl restart slurm
 }
 

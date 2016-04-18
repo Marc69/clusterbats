@@ -17,20 +17,12 @@ load config/configuration
    iptables-save | grep -C3 'POSTROUTING -s 10.146.0.0/16 ! -o docker0 -j MASQUERADE' | grep 'POSTROUTING -o [0-z]*[0-1] -j MASQUERADE'
 }
 
-@test "1.1.6.1 - iptables have the right acceptance rules" {
-   iptables-save | grep -C3 'br100 -j ACCEPT'
-}
-
-@test "1.1.8 - 3d interface is taken over by the bridge" {
-   ip a | grep 'master br100'
-}
-
 @test "1.1.9 - SElinux is disabled" {
   sestatus | grep 'SELinux status' | egrep disabled
 }
 
 @test "1.1.10 - The timezone is set correctly" {
-  date | grep $TIMEZONE
+  timedatectl | grep "Time zone" | grep "$TIMEZONE"
 }
 
 @test "1.1.12 - Hostname is set correctly" {
