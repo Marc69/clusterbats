@@ -8,8 +8,11 @@ load config/configuration
 @test "6.2.0.1 - Check sentinel is configured" {
     pcs resource | grep sentinel
 }
+@test "6.2.0.2 - Check drbd connection" {
+    drbdadm cstate ha_disk | grep "Connected\|SyncSource"
+}
 
-@test "6.2.0.2 - See if the cluster stabilizes" {
+@test "6.2.0.3 - See if the cluster stabilizes" {
     for i in {30..0}; do
         if (pcs resource | grep sentinel | grep Started > /dev/null) && \
            (drbd-overview | grep UpToDate/UpToDate > /dev/null); then
@@ -56,24 +59,31 @@ load config/configuration
 
 @test "6.2.1.0 - Check stickyness" { 
     current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
-    debug echo $current
     standby=$(pcs cluster status | grep standby | awk -F: '{ print $1 }' | awk '{ print $2 }')
     pcs cluster unstandby $standby
     sleep 10 
-    while :; do
+    for i in {30..0}; do
         if pcs status | grep ^Online: | grep $standby; then
             break
         fi
-        sleep 5
+        sleep 10
     done
+    [[ $i != 0 ]]
 
     active=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
-    debug echo $current
-    debug echo $active
     [[ ${active} = ${current} ]]
 }
+
 @test "6.2.1.1 - Check DNS after failover" { 
     host controller.cluster controller.cluster
     host controller-1.cluster controller.cluster
     host login.vc-a controller.cluster
+}
+
+@test "6.2.1.2 - Check xCAT commands after failover" { 
+    tabdump hosts
+}
+
+@test "6.2.1.3 - Check if the time is sychronized beteen controllers" { 
+    [[ $(($(ssh controller-1 date +%s)- $(ssh controller-2 date +%s))) < 2 ]]
 }

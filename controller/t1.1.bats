@@ -88,6 +88,12 @@ load config/configuration
    tabdump site
 }
 
+@test "1.1.23 Check max connections on the database > 1024" {
+   max_conns=$(mysql -u root -psystem --protocol=tcp -N -B -e "select @@max_connections")
+   [[ $max_conns -ge 1024 ]]
+}
+
+
 @test "The controller hosts an openstack image -- can be removed" {
    # Can be removed
    tabdump osimage | grep "centos7-x86_64-install-openstack"

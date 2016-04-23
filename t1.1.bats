@@ -59,6 +59,10 @@
    run bash -c "tabdump osimage | grep "centos7-x86_64-install-openstack""
    [ "$status" -eq 0 ]
 }
+@test "1.1.14 The controller hosts an openstack image" {
+   max_conns=$(mysql -u root -psystem --protocol=tcp -N -B -e "select @@max_connections")
+   [[ $max_conns -gt 1024 ]]
+}
 
 #@test "1.1.15 The controller has postscripts for the addition of the trinity api and dashboard"
    
