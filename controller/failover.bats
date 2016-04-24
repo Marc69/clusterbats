@@ -38,6 +38,7 @@ load config/configuration
     # Check if both nodes are active
     pcs cluster status | grep Online | grep controller-1.cluster | grep controller-2.cluster
     
+    debug $active
     # Ok continue
     active=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
     pcs cluster standby $active
@@ -54,6 +55,7 @@ load config/configuration
         sleep 10
     done
     [[ $i != 0 ]]
+    debug $(pcs resource | grep sentinel)
     pcs resource | grep sentinel | grep Started | grep -v $active
 }
 
@@ -69,8 +71,10 @@ load config/configuration
         sleep 10
     done
     [[ $i != 0 ]]
-
     active=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
+
+    debug active: $active
+    debug current: $current
     [[ ${active} = ${current} ]]
 }
 
@@ -85,5 +89,7 @@ load config/configuration
 }
 
 @test "6.2.1.3 - Check if the time is sychronized beteen controllers" { 
-    [[ $(($(ssh controller-1 date +%s)- $(ssh controller-2 date +%s))) < 2 ]]
+    t1=$(ssh controller-1 date +%s)
+    t2=$(ssh controller-2 date +%s)
+    [[ $(( $t1 - $t2)) < 2 ]]
 }
