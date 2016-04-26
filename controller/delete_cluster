@@ -4,7 +4,11 @@ cluster=$1
 echo "deleting cluster $1"
 
 source /root/keystonerc_$1
-read ip vm <<<$(read ip vm <<<$(nova floating-ip-list | grep login | awk -F\| '{print $2, $5}'))
+read ip vm <<<$(nova floating-ip-list | grep login | awk -F\| '{print $2, $5}')
+
+if [[ "$vm" = "login_a" ]]; then
+   vm=login-a
+fi
 
 echo found $ip associated with $vm
 
@@ -12,9 +16,22 @@ nova floating-ip-disassociate $vm $ip
 nova floating-ip-delete $ip
 nova delete $vm
 
-source keystonerc_admin
+source /root/keystonerc_admin
 nova floating-ip-bulk-delete $ip
 keystone user-delete $1
 keystone tenant-delete $1
+
+rmdef -t group -o vc-$1
+makedns -d login-$1
+makehosts -d login-$1
+rmdef -t node -o login-$1
+
+makedns -d vc-$1
+makehosts -d vc-$1
+
+chtab -d netname=vc_${1}_net networks
+rm -rf /cluster/vc-${1}
+rm -rf /nfshome/vc-${1}
+systemctl restart trinity-api
 
 

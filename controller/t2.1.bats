@@ -6,7 +6,39 @@ load config/configuration
    http --ignore-stdin GET http://10.141.255.254:32123/trinity/v1/ | grep Welcome
 }
 
-@test "2.1.1 - We can create a tenant" {
+@test "2.0.1 - We can create a first tenant" {
+   source /root/keystonerc_admin
+   if keystone user-get a; then
+      skip
+   fi
+   keystone tenant-create --name a
+   keystone user-create --name a --tenant a --pass system
+
+cat > /root/keystonerc_a <<EOF
+export OS_USERNAME=a
+export OS_TENANT_NAME=a
+export OS_PASSWORD=system
+export OS_AUTH_URL=http://10.141.255.254:5000/v2.0/
+export OS_REGION_NAME=regionOne
+export PS1='[\u@\h \W(keystone_a)]\\$ '
+EOF
+}
+
+@test "2.0.1 - We can move resources to the first tenant." {
+   TOKEN=$(http --ignore-stdin -b POST http://10.141.255.254:32123/trinity/v1/login \
+        X-Tenant:admin \
+        username=admin \
+        password=system \
+        | jq --raw-output '.token')
+
+   http --ignore-stdin --check-status PUT http://10.141.255.254:32123/trinity/v1/clusters/a \
+       X-Tenant:admin \
+       X-Auth-Token:$TOKEN \
+       specs:='{"default":2}'
+}
+
+
+@test "2.1.1 - We can create a second tenant" {
    source /root/keystonerc_admin
    if keystone user-get b; then
       skip
