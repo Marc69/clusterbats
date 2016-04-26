@@ -24,19 +24,42 @@ export PS1='[\u@\h \W(keystone_a)]\\$ '
 EOF
 }
 
-@test "2.0.1 - We can move resources to the first tenant." {
+@test "2.0.3 - We can assign the containers to the default virtual cluster a" {
+  nodeadd $CONTAINERS groups=vc-a,hw-default
+  makehosts vc-a
+  makedns -n > /dev/null || true
+  systemctl restart trinity-api
+  sleep 4
+}
+
+@test "2.0.4 - We can move resources to the first tenant." {
    TOKEN=$(http --ignore-stdin -b POST http://10.141.255.254:32123/trinity/v1/login \
         X-Tenant:admin \
         username=admin \
         password=system \
         | jq --raw-output '.token')
 
-   http --ignore-stdin --check-status PUT http://10.141.255.254:32123/trinity/v1/clusters/a \
+   http --ignore-stdin --check-status \
+        --timeout=600 \
+       PUT http://10.141.255.254:32123/trinity/v1/clusters/a \
        X-Tenant:admin \
        X-Auth-Token:$TOKEN \
        specs:='{"default":2}'
 }
 
+@test "2.0.5 - There is a virtual login node" {
+  exit 0
+  sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a date
+}
+
+@test "2.0.6 - Slurm and munge are running on the virtual login nodes" {
+  sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl status slurm
+  sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl status munge
+}
+
+@test "2.0.7 - The compute nodes can connect to the internet" {
+  ssh -o StrictHostKeyChecking=no node001 ping -c5 8.8.8.8
+}
 
 @test "2.1.1 - We can create a second tenant" {
    source /root/keystonerc_admin
@@ -63,10 +86,12 @@ EOF
         password=system \
         | jq --raw-output '.token')
 
-   http --ignore-stdin --check-status PUT http://10.141.255.254:32123/trinity/v1/clusters/a \
+   http --ignore-stdin --check-status \
+        --timeout=600 \
+       PUT http://10.141.255.254:32123/trinity/v1/clusters/a \
        X-Tenant:admin \
        X-Auth-Token:$TOKEN \
-       specs:='{"default":1}' 
+       specs:='{"default":2}'
 }
 
 @test "2.1.4 - We can allocate resources to a tenant." {
