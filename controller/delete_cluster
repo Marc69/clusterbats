@@ -1,0 +1,20 @@
+set -x
+cluster=$1
+
+echo "deleting cluster $1"
+
+source /root/keystonerc_$1
+read ip vm <<<$(read ip vm <<<$(nova floating-ip-list | grep login | awk -F\| '{print $2, $5}'))
+
+echo found $ip associated with $vm
+
+nova floating-ip-disassociate $vm $ip
+nova floating-ip-delete $ip
+nova delete $vm
+
+source keystonerc_admin
+nova floating-ip-bulk-delete $ip
+keystone user-delete $1
+keystone tenant-delete $1
+
+

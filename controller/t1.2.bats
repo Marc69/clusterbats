@@ -31,7 +31,7 @@ load config/configuration
   rpower compute reset
   sleep 5
 
-  for i in {1..100} ; do
+  for i in {30..0} ; do
     for NODE in $(expand ${NODES}); do
       if ! lsdef -t node ${NODE} | grep 'mac=' ; then
         sleep 10 
@@ -41,10 +41,10 @@ load config/configuration
     break
   done
   # trigger the timeout condition
-  [[ "$i" -ne 100 ]] 
+  [[ "$i" -ne 0 ]] 
 }
 
-@test "- 1.2.3 - We can netboot trinity images on the compute nodes" {
+@test "- 1.2.3 - We can netboot trinity compute nodes with serial over lan" {
   for i in {1..2} ; do
     for NODE in $(expand ${NODES}); do
       if ! ssh $NODE docker ps 2>/dev/null | grep trinity; then
@@ -53,23 +53,48 @@ load config/configuration
     done
     #skip
   done
-  nodeset ${NODES} osimage=centos7-x86_64-netboot-trinity
-  rpower $NODES reset
-  systemctl restart trinity-api
+  chtab node=compute nodehm.serialport=1 nodehm.serialspeed=115200 nodehm.serialflow=hard
+  makeconservercf
+  nodeset ${NODES} osimage=centos7-x86_64-netboot-trinity > /dev/null
+  rpower $NODES reset > /dev/null
 
-  for i in {1..100} ; do
+  for i in {10..0} ; do
     for NODE in $(expand ${NODES}); do
-      if ! ssh $NODE systemctl status trinity; then
-        sleep 10 
+      if ! ssh $NODE systemctl status trinity 2> /dev/null; then
+        sleep 5 
         continue 2;
       fi
     done
-    # trigger the timeout condition
-    sleep 5
     break
   done
-  [[ "$i" -ne 100 ]] 
+  [[ "$i" -ne 0 ]] # timeout
 }
+
+@test "- 1.2.3.1 - We can netboot trinity compute nodes without serial over lan" {
+  for i in {1..2} ; do
+    for NODE in $(expand ${NODES}); do
+      if ! ssh $NODE docker ps 2>/dev/null | grep trinity; then
+        break 2;
+      fi
+    done
+    skip
+  done
+  chtab node=compute nodehm.serialport= nodehm.serialspeed= nodehm.serialflow=
+  nodeset ${NODES} osimage=centos7-x86_64-netboot-trinity > /dev/null
+  rpower $NODES reset > /dev/null
+
+  for i in {10..0} ; do
+    for NODE in $(expand ${NODES}); do
+      if ! ssh $NODE systemctl status trinity 2> /dev/null; then
+        sleep 5 
+        continue 2;
+      fi
+    done
+    break
+  done
+  [[ "$i" -ne 0 ]] # timeout
+}
+
 
 @test "- 1.2.5 - We can assign the containers to the default virtual cluster a" {
   CPUs=$(lsdef -t node -o node001 -i cpucount | grep cpucount | cut -d= -f2)
