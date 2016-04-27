@@ -58,7 +58,7 @@ load config/configuration
   nodeset ${NODES} osimage=centos7-x86_64-netboot-trinity > /dev/null
   rpower $NODES reset > /dev/null
 
-  for i in {10..0} ; do
+  for i in {30..0} ; do
     for NODE in $(expand ${NODES}); do
       if ! ssh $NODE systemctl status trinity 2> /dev/null; then
         sleep 5 
@@ -83,7 +83,7 @@ load config/configuration
   nodeset ${NODES} osimage=centos7-x86_64-netboot-trinity > /dev/null
   rpower $NODES reset > /dev/null
 
-  for i in {10..0} ; do
+  for i in {30..0} ; do
     for NODE in $(expand ${NODES}); do
       if ! ssh $NODE systemctl status trinity 2> /dev/null; then
         sleep 5 
