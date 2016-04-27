@@ -55,7 +55,6 @@ load config/configuration
         sleep 10
     done
     [[ $i != 0 ]]
-    debug $(pcs resource | grep sentinel)
     pcs resource | grep sentinel | grep Started | grep -v $active
 }
 
@@ -72,9 +71,6 @@ load config/configuration
     done
     [[ $i != 0 ]]
     active=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
-
-    debug active: $active
-    debug current: $current
     [[ ${active} = ${current} ]]
 }
 
@@ -92,4 +88,26 @@ load config/configuration
     t1=$(ssh controller-1 date +%s)
     t2=$(ssh controller-2 date +%s)
     [[ $(( $t1 - $t2)) < 2 ]]
+}
+
+@test "6.2.2.1 - Check if nova compute and network come up again" {
+    source /root/keystonerc_admin
+    nova service-list | awk -F\| '{print $3, $7}' | \
+        grep "nova-network\|nova-compute" | grep -v up
+}
+
+@test "6.2.2.2 - Check if galera comes up again" {
+    mysql -u root -psystem --protocol=tcp -N -B -e "show status like 'wsrep_ready'" | grep ON
+    mysql -u root -psystem --protocol=tcp -N -B -e "show status like 'wsrep_connected'" | grep ON
+    mysql -u root -psystem --protocol=tcp -N -B -e "show status like 'wsrep_cluster_status'" | grep Primary
+    mysql -u root -psystem --protocol=tcp -N -B -e "show status like 'wsrep_evs_state'" | grep OPERATIONAL
+    mysql -u root -psystem --protocol=tcp -N -B -e "show status like 'wsrep_local_state_comment'" | grep Synced
+}
+
+@test "6.2.2.3 - Check if nova controller is up on the active node" {
+    source /root/keystonerc_admin
+    current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
+    nova service-list | awk -F\| '{print $3, $4, $7}' | \
+        grep $current | \
+        grep "nova-scheduler\|nova-conductor" | grep -v up
 }

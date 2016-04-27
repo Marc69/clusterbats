@@ -94,6 +94,11 @@ load config/configuration
 }
 
 
+@test "1.1.24 - Check drbd connection" {
+    pcs status nodes | grep controller-2 || skip "Pacemaker does not seem to be configured for HA"
+    drbdadm cstate ha_disk | grep "Connected\|SyncSource"
+}
+
 @test "The controller hosts an openstack image -- can be removed" {
    # Can be removed
    tabdump osimage | grep "centos7-x86_64-install-openstack"

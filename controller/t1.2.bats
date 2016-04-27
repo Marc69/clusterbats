@@ -97,6 +97,7 @@ load config/configuration
 
 
 @test "- 1.2.5 - We can assign the containers to the default virtual cluster a" {
+  skip Moved to use case 2.1
   CPUs=$(lsdef -t node -o node001 -i cpucount | grep cpucount | cut -d= -f2)
   touch /cluster/vc-a/etc/slurm/slurm-nodes.conf
   cat > /cluster/vc-a/etc/slurm/slurm-nodes.conf << EOF
@@ -110,14 +111,17 @@ EOF
 }
 
 @test "- 1.2.6 - There is a virtual login node" {
+  skip Moved to use case 2.1
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a date
 }
 
 @test "- 1.2.7 - Slurm and munge are running on the virtual login nodes" {
+  skip Moved to use case 2.1
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl status slurm
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl status munge
 }
 
 @test "- 1.2.8 - The compute nodes can connect to the internet" {
+  skip Moved to use case 2.1
   ssh -o StrictHostKeyChecking=no node001 ping -c5 8.8.8.8
 }
