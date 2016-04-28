@@ -24,10 +24,8 @@ export PS1='[\u@\h \W(keystone_a)]\\$ '
 EOF
 }
 
-@test "2.0.3 - We can assign the containers to the default virtual cluster a" {
-  nodeadd $CONTAINERS groups=vc-a,hw-default
-  makehosts vc-a
-  makedns -n > /dev/null || true
+@test "2.0.3 - We can assign the containers to the default hardware group" {
+  nodeadd $CONTAINERS groups=hw-default
   systemctl restart trinity-api
   sleep 4
 }
@@ -48,7 +46,18 @@ EOF
 }
 
 @test "2.0.5 - There is a virtual login node" {
-  exit 0
+  source /root/keystonerc_a
+  for i in {30..0} ; do
+    nova list | grep login.vc-a | awk -F\| '{print $4}' | grep ACTIVE && break
+    sleep 5
+  done
+  [[ "$i" -ne 0 ]] # timeout on nova start
+
+  for i in {30..0} ; do
+    ping -c1 login.vc-a > /dev/null 2>&1 && break
+    sleep 3
+  done
+  [[ "$i" -ne 0 ]] # timeout on waiting for the login node to be booted
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a date
 }
 
@@ -79,7 +88,7 @@ export PS1='[\u@\h \W(keystone_b)]\\$ '
 EOF
 }
 
-@test "2.1.3 - We can remove resources from a tenant." {
+@test "2.1.3 - We can remove resources from the first tenant." {
    TOKEN=$(http --ignore-stdin -b POST http://10.141.255.254:32123/trinity/v1/login \
         X-Tenant:admin \
         username=admin \
@@ -94,7 +103,7 @@ EOF
        specs:='{"default":1}'
 }
 
-@test "2.1.4 - We can allocate resources to a tenant." {
+@test "2.1.4 - We can allocate resources to the second tenant." {
    TOKEN=$(http --ignore-stdin -b POST http://10.141.255.254:32123/trinity/v1/login \
         X-Tenant:admin \
         username=admin \

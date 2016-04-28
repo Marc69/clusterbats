@@ -59,6 +59,7 @@ load config/configuration
 }
 
 @test "6.2.1.0 - Check stickyness" { 
+    skip
     current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
     standby=$(pcs cluster status | grep standby | awk -F: '{ print $1 }' | awk '{ print $2 }')
     pcs cluster unstandby $standby
@@ -97,11 +98,11 @@ load config/configuration
 }
 
 @test "6.2.2.2 - Check if galera comes up again" {
-    mysql -u root -psystem --protocol=tcp -N -B -e "show status like 'wsrep_ready'" | grep ON
-    mysql -u root -psystem --protocol=tcp -N -B -e "show status like 'wsrep_connected'" | grep ON
-    mysql -u root -psystem --protocol=tcp -N -B -e "show status like 'wsrep_cluster_status'" | grep Primary
-    mysql -u root -psystem --protocol=tcp -N -B -e "show status like 'wsrep_evs_state'" | grep OPERATIONAL
-    mysql -u root -psystem --protocol=tcp -N -B -e "show status like 'wsrep_local_state_comment'" | grep Synced
+    mysql -u root -psystem --protocol=tcp -h controller -N -B -e "show status like 'wsrep_ready'" | grep ON
+    mysql -u root -psystem --protocol=tcp -h controller -N -B -e "show status like 'wsrep_connected'" | grep ON
+    mysql -u root -psystem --protocol=tcp -h controller -N -B -e "show status like 'wsrep_cluster_status'" | grep Primary
+    mysql -u root -psystem --protocol=tcp -h controller -N -B -e "show status like 'wsrep_evs_state'" | grep OPERATIONAL
+    mysql -u root -psystem --protocol=tcp -h controller -N -B -e "show status like 'wsrep_local_state_comment'" | grep Synced
 }
 
 @test "6.2.2.3 - Check if nova controller is up on the active node" {
