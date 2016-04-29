@@ -47,15 +47,15 @@ EOF
 
 @test "2.0.5 - There is a virtual login node" {
   source /root/keystonerc_a
-  for i in {30..0} ; do
+  for i in {50..0} ; do
     nova list | grep login.vc-a | awk -F\| '{print $4}' | grep ACTIVE && break
-    sleep 5
+    sleep 10
   done
   [[ "$i" -ne 0 ]] # timeout on nova start
 
-  for i in {30..0} ; do
+  for i in {50..0} ; do
     ping -c1 login.vc-a > /dev/null 2>&1 && break
-    sleep 3
+    sleep 10
   done
   [[ "$i" -ne 0 ]] # timeout on waiting for the login node to be booted
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a date
