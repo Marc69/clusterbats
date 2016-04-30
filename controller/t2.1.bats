@@ -57,6 +57,7 @@ EOF
     ping -c1 login.vc-a > /dev/null 2>&1 && break
     sleep 10
   done
+
   [[ "$i" -ne 0 ]] # timeout on waiting for the login node to be booted
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a date
 }

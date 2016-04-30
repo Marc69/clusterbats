@@ -11,7 +11,7 @@
      sleep 5
   done
   [[ i != 0 ]]
-  sleep 2
+  sleep 5
   ssh node001 docker ps
 }
 
