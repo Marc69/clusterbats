@@ -37,4 +37,6 @@ rm -rf /cluster/vc-${1}
 rm -rf /nfshome/vc-${1}
 systemctl restart trinity-api
 
+ssh-keygen -R login.vc-${1}
+
 

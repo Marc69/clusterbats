@@ -69,13 +69,14 @@ load config/configuration
 }
 
 @test "1.1.21 - the appropriate openstack services are active" {
-   openstack-status | grep nova-api | grep inactive
-   openstack-status | grep nova-compute | grep -w active
-   openstack-status | grep nova-network | grep -w active
-   openstack-status | grep nova-scheduler | grep inactive
-   openstack-status | grep openstack-dashboard | grep -w active
-   openstack-status | grep dbus | grep -w active
-   openstack-status | grep memcached | grep -w active
+   status=$(openstack-status)
+   echo $status | grep nova-api | grep inactive
+   echo $status | grep nova-compute | grep -w active
+   echo $status | grep nova-network | grep -w active
+   echo $status | grep nova-scheduler | grep inactive
+   echo $status | grep openstack-dashboard | grep -w active
+   echo $status | grep dbus | grep -w active
+   echo $status | grep memcached | grep -w active
 }
 
 @test "1.1.22 - Check that xcat configuration is stored in the mariadb container" {
@@ -97,10 +98,5 @@ load config/configuration
 @test "1.1.24 - Check drbd connection" {
     pcs status nodes | grep controller-2 || skip "Pacemaker does not seem to be configured for HA"
     drbdadm cstate ha_disk | grep "Connected\|SyncSource"
-}
-
-@test "The controller hosts an openstack image -- can be removed" {
-   # Can be removed
-   tabdump osimage | grep "centos7-x86_64-install-openstack"
 }
    

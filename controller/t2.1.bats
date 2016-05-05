@@ -47,16 +47,17 @@ EOF
 
 @test "2.0.5 - There is a virtual login node" {
   source /root/keystonerc_a
-  for i in {30..0} ; do
-    nova list | grep login.vc-a | awk -F\| '{print $4}' | grep ACTIVE && break
-    sleep 5
+  for i in {50..0} ; do
+    nova list | grep login-a | awk -F\| '{print $4}' | grep ACTIVE && break
+    sleep 10
   done
   [[ "$i" -ne 0 ]] # timeout on nova start
 
-  for i in {30..0} ; do
+  for i in {50..0} ; do
     ping -c1 login.vc-a > /dev/null 2>&1 && break
-    sleep 3
+    sleep 10
   done
+
   [[ "$i" -ne 0 ]] # timeout on waiting for the login node to be booted
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a date
 }
@@ -110,7 +111,7 @@ EOF
         password=system \
         | jq --raw-output '.token')
 
-   http --ignore-stdin --check-status --timeout 120 \
+   http --ignore-stdin --check-status --timeout 600 \
        PUT http://10.141.255.254:32123/trinity/v1/clusters/b \
        X-Tenant:admin \
        X-Auth-Token:$TOKEN \
@@ -118,8 +119,19 @@ EOF
 }
 
 @test "2.1.5 - Login nodes are created for active clusters." {
-   source /root/keystonerc_b
-   nova show login-b  
+  source /root/keystonerc_b
+  for i in {50..0} ; do
+    nova list | grep login-b | awk -F\| '{print $4}' | grep ACTIVE && break
+    sleep 10
+  done
+  [[ "$i" -ne 0 ]] # timeout on nova start
+
+  for i in {50..0} ; do
+    ping -c1 login.vc-b > /dev/null 2>&1 && break
+    sleep 10
+  done
+  [[ "$i" -ne 0 ]] # timeout on waiting for the login node to be booted
+  sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-b date
 }
 
 @test "2.1.7 - After repartitioning, the containers know to which virtual cluster they belong." {

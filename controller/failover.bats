@@ -58,23 +58,6 @@ load config/configuration
     pcs resource | grep sentinel | grep Started | grep -v $active
 }
 
-@test "6.2.1.0 - Check stickyness" { 
-    skip
-    current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
-    standby=$(pcs cluster status | grep standby | awk -F: '{ print $1 }' | awk '{ print $2 }')
-    pcs cluster unstandby $standby
-    sleep 10 
-    for i in {30..0}; do
-        if pcs status | grep ^Online: | grep $standby; then
-            break
-        fi
-        sleep 10
-    done
-    [[ $i != 0 ]]
-    active=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
-    [[ ${active} = ${current} ]]
-}
-
 @test "6.2.1.1 - Check DNS after failover" { 
     host controller.cluster controller.cluster
     host controller-1.cluster controller.cluster
@@ -93,8 +76,12 @@ load config/configuration
 
 @test "6.2.2.1 - Check if nova compute and network come up again" {
     source /root/keystonerc_admin
-    nova service-list | awk -F\| '{print $3, $7}' | \
-        grep "nova-network\|nova-compute" | grep -v up
+    for i in {30..0}; do
+        nova service-list | awk -F\| '{print $3, $7}' | \
+            grep "nova-network\|nova-compute" | grep -v down && break
+        sleep 10
+    done
+    [[ $i != 0 ]]
 }
 
 @test "6.2.2.2 - Check if galera comes up again" {
@@ -108,7 +95,12 @@ load config/configuration
 @test "6.2.2.3 - Check if nova controller is up on the active node" {
     source /root/keystonerc_admin
     current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
-    nova service-list | awk -F\| '{print $3, $4, $7}' | \
-        grep $current | \
-        grep "nova-scheduler\|nova-conductor" | grep -v up
+    for i in {30..0}; do
+	nova service-list | awk -F\| '{print $3, $4, $7}' | \
+            grep $current | \
+            grep "nova-scheduler\|nova-conductor" | grep -v down && break
+            sleep 10
+    done
+    [[ $i != 0 ]]
+
 }
