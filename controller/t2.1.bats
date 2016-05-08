@@ -3,7 +3,7 @@ load config/configuration
 @test "Trinity Api is running" {
    pip install httpie > /dev/null 2>&1
    yum -y install jq
-   http --ignore-stdin GET http://10.141.255.254:32123/trinity/v1/ | grep Welcome
+   http --ignore-stdin GET http://controller:32123/trinity/v1/ | grep Welcome
 }
 
 @test "2.0.1 - We can create a first tenant" {
@@ -18,7 +18,7 @@ cat > /root/keystonerc_a <<EOF
 export OS_USERNAME=a
 export OS_TENANT_NAME=a
 export OS_PASSWORD=system
-export OS_AUTH_URL=http://10.141.255.254:5000/v2.0/
+export OS_AUTH_URL=http://controller:5000/v2.0/
 export OS_REGION_NAME=regionOne
 export PS1='[\u@\h \W(keystone_a)]\\$ '
 EOF
@@ -31,7 +31,7 @@ EOF
 }
 
 @test "2.0.4 - We can move resources to the first tenant." {
-   TOKEN=$(http --ignore-stdin -b POST http://10.141.255.254:32123/trinity/v1/login \
+   TOKEN=$(http --ignore-stdin -b POST http://controller:32123/trinity/v1/login \
         X-Tenant:admin \
         username=admin \
         password=system \
@@ -39,7 +39,7 @@ EOF
 
    http --ignore-stdin --check-status \
         --timeout=600 \
-       PUT http://10.141.255.254:32123/trinity/v1/clusters/a \
+       PUT http://controller:32123/trinity/v1/clusters/a \
        X-Tenant:admin \
        X-Auth-Token:$TOKEN \
        specs:='{"default":2}'
@@ -59,16 +59,16 @@ EOF
   done
 
   [[ "$i" -ne 0 ]] # timeout on waiting for the login node to be booted
-  sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a date
+  sshpass -p 'system' ssh  login.vc-a date
 }
 
 @test "2.0.6 - Slurm and munge are running on the virtual login nodes" {
-  sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl status slurm
-  sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl status munge
+  sshpass -p 'system' ssh  login.vc-a systemctl status slurm
+  sshpass -p 'system' ssh  login.vc-a systemctl status munge
 }
 
 @test "2.0.7 - The compute nodes can connect to the internet" {
-  ssh -o StrictHostKeyChecking=no node001 ping -c5 8.8.8.8
+  ssh  node001 ping -c5 8.8.8.8
 }
 
 @test "2.1.1 - We can create a second tenant" {
@@ -83,14 +83,14 @@ cat > /root/keystonerc_b <<EOF
 export OS_USERNAME=b
 export OS_TENANT_NAME=b
 export OS_PASSWORD=system
-export OS_AUTH_URL=http://10.141.255.254:5000/v2.0/
+export OS_AUTH_URL=http://controller:5000/v2.0/
 export OS_REGION_NAME=regionOne
 export PS1='[\u@\h \W(keystone_b)]\\$ '
 EOF
 }
 
 @test "2.1.3 - We can remove resources from the first tenant." {
-   TOKEN=$(http --ignore-stdin -b POST http://10.141.255.254:32123/trinity/v1/login \
+   TOKEN=$(http --ignore-stdin -b POST http://controller:32123/trinity/v1/login \
         X-Tenant:admin \
         username=admin \
         password=system \
@@ -98,21 +98,21 @@ EOF
 
    http --ignore-stdin --check-status \
         --timeout=600 \
-       PUT http://10.141.255.254:32123/trinity/v1/clusters/a \
+       PUT http://controller:32123/trinity/v1/clusters/a \
        X-Tenant:admin \
        X-Auth-Token:$TOKEN \
        specs:='{"default":1}'
 }
 
 @test "2.1.4 - We can allocate resources to the second tenant." {
-   TOKEN=$(http --ignore-stdin -b POST http://10.141.255.254:32123/trinity/v1/login \
+   TOKEN=$(http --ignore-stdin -b POST http://controller:32123/trinity/v1/login \
         X-Tenant:admin \
         username=admin \
         password=system \
         | jq --raw-output '.token')
 
    http --ignore-stdin --check-status --timeout 600 \
-       PUT http://10.141.255.254:32123/trinity/v1/clusters/b \
+       PUT http://controller:32123/trinity/v1/clusters/b \
        X-Tenant:admin \
        X-Auth-Token:$TOKEN \
        specs:='{"default":1}' 
@@ -131,7 +131,7 @@ EOF
     sleep 10
   done
   [[ "$i" -ne 0 ]] # timeout on waiting for the login node to be booted
-  sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-b date
+  sshpass -p 'system' ssh  login.vc-b date
 }
 
 @test "2.1.7 - After repartitioning, the containers know to which virtual cluster they belong." {
