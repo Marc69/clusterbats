@@ -4,14 +4,14 @@ cluster=$1
 echo "deleting cluster $1"
 
 source /root/keystonerc_$1
-#read ip, vm <<<$(nova floating-ip-list | grep login | awk -F\| '{print $2, $3}')
-OLDIFS=$IFS
-IFS="\n"
-for line in $(nova floating-ip-list | grep "^|" | grep -v Ip | awk -F\| '{printf "%s %s", $2, $3}'); do
-    echo $line
-done
-IFS=$OLDIFS
-exit
+read ip, vm <<<$(nova floating-ip-list | grep login | awk -F\| '{print $2, $3}')
+#OLDIFS=$IFS
+#IFS="\n"
+#for line in $(nova floating-ip-list | grep "^|" | grep -v Ip | awk -F\| '{printf "%s %s", $2, $3}'); do
+#    echo $line
+#done
+#IFS=$OLDIFS
+#exit
 
 echo found $ip associated with $vm
 
