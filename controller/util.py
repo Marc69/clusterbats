@@ -5,7 +5,7 @@ from keystoneclient.v2_0 import client as keystoneclient
 
 p = re.compile(r'(?:export )?(.*?)=(.*)')
 
-def source(config):
+def Nova(config):
     c = {}
     with open(config) as file:
         for line in file:
@@ -16,7 +16,7 @@ def source(config):
                          c['OS_PASSWORD'], c['OS_TENANT_NAME'], 
                          c['OS_AUTH_URL'])
 
-def source_2(config):
+def Keystone(config):
     c = {}
     with open(config) as file:
         for line in file:
@@ -28,7 +28,7 @@ def source_2(config):
                                  tenant_name=c['OS_TENANT_NAME'], 
                                  auth_url=c['OS_AUTH_URL'])
 
-nova = source('/root/keystonerc_a')
+nova = Nova('/root/keystonerc_a')
 
 for ip in nova.floating_ips.list():
     nova.servers.remove_floating_ip(ip.instance_id, ip.ip)
@@ -41,12 +41,12 @@ for server in nova.servers.list():
     print server
     #nova.servers.delete(server)
 
-nova = source('/root/keystonerc_admin')
+nova = Nova('/root/keystonerc_admin')
 print nova.floating_ip_pools.list()
 #print nova.floating_ip_pools.delete('login-a')
 
 
-keystone = source_2('/root/keystonerc_admin')
+keystone = Keystone('/root/keystonerc_admin')
 #print keystone.users.list(tenant_id='a')
 # Fix me: this should go into a utility method.
 ids = [tenant.id for tenant in keystone.tenants.list() if tenant.name == 'a']
