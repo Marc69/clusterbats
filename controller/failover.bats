@@ -23,12 +23,12 @@ load config/configuration
     return 1;
 }
 
-@test "6.2.0.3 - Check DNS configuration" {
+@test "6.2.0.4 - Check DNS configuration" {
     ssh controller-1.cluster cat /etc/named.conf | grep xcat_key
     ssh controller-2.cluster cat /etc/named.conf | grep xcat_key
 }
 
-@test "6.2.0.4 - Check replicator service" {
+@test "6.2.0.5 - Check replicator service" {
     ssh controller-1.cluster systemctl status replicator.timer | grep "Active: active"
     ssh controller-2.cluster systemctl status replicator.timer | grep "Active: active"
 }
@@ -38,7 +38,6 @@ load config/configuration
     # Check if both nodes are active
     pcs cluster status | grep Online | grep controller-1.cluster | grep controller-2.cluster
     
-    debug $active
     # Ok continue
     active=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
     pcs cluster standby $active
@@ -102,5 +101,4 @@ load config/configuration
             sleep 10
     done
     [[ $i != 0 ]]
-
 }
