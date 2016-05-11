@@ -5,10 +5,10 @@
     [ "$status" -eq 0 ]
 }
 
-username=$(sshpass -p system ssh -o StrictHostKeyChecking=no login.vc-a obol -w system user list | head -1)
+username=$(sshpass -p system ssh -o StrictHostKeyChecking=no login.vc-a obol -H ldap://controller -w system user list | head -1)
 @test "Create a user for the login node" {
     if [[ $username != jane ]]; then  
-       sshpass -p system ssh -o StrictHostKeyChecking=no login.vc-a obol -w system  user add --password 123 --cn Jane --sn Smith --givenName Jane jane
+       sshpass -p system ssh -o StrictHostKeyChecking=no login.vc-a obol -H ldap://controller -w system  user add --password 123 --cn Jane --sn Smith --givenName Jane jane
     fi;
 }
 
