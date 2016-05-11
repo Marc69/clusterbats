@@ -2,7 +2,8 @@
 
 source /root/keystonerc_admin
 keystone tenant-create --name $1
-keystone user-create --name $1 --tenant $1 --pass system
+obol -H ldap://controller -w system user add $1 --password system --cn $1 --sn $1 --givenName $1
+keystone user-role-add --user=$1 --tenant=$1 --role=admin
 
 cat > /root/keystonerc_$1 <<EOF
 export OS_USERNAME=$1

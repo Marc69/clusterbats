@@ -12,7 +12,8 @@ load config/configuration
       skip
    fi
    keystone tenant-create --name a
-   keystone user-create --name a --tenant a --pass system
+   obol -H ldap://controller -w system user add "a" --password system --cn "a" --sn "a" --givenName "a"
+   keystone user-role-add --user=a --tenant=a --role=admin
 
 cat > /root/keystonerc_a <<EOF
 export OS_USERNAME=a
@@ -84,7 +85,8 @@ EOF
       skip
    fi
    keystone tenant-create --name b
-   keystone user-create --name b --tenant b --pass system
+   obol -H ldap://controller -w system user add "b" --password system --cn "b" --sn "b" --givenName "b"
+   keystone user-role-add --user=b --tenant=b --role=admin
 
 cat > /root/keystonerc_b <<EOF
 export OS_USERNAME=b
