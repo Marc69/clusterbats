@@ -25,9 +25,9 @@ EOF
 }
 
 @test "2.0.3 - We can assign the containers to the default hardware group" {
-  nodeadd $CONTAINERS groups=hw-default
-  systemctl restart trinity-api
-  sleep 4
+   nodeadd $CONTAINERS groups=hw-default
+   systemctl restart trinity-api
+   sleep 14 
 }
 
 @test "2.0.4 - We can move resources to the first tenant." {

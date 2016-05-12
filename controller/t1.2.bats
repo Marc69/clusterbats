@@ -53,7 +53,7 @@ load config/configuration
     done
     #skip
   done
-  chtab node=compute nodehm.serialport=1 nodehm.serialspeed=115200 nodehm.serialflow=hard
+  chtab node=compute nodehm.serialport=1 nodehm.serialspeed=57600 nodehm.serialflow=hard
   makeconservercf
   nodeset ${NODES} osimage=centos7-x86_64-netboot-trinity > /dev/null
   rpower $NODES reset > /dev/null
