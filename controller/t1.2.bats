@@ -5,6 +5,9 @@ load config/configuration
   # t1.1.19 in test sheet
   chtab node=switch hosts.ip=${SWITCH} # from configuration
   echo "${SWITCH_TABLE}" > /tmp/switch.csv
+  if [[ ! -f /root/switch-backup.csv ]]; then
+      tabdump switch > /root/switch-backup.csv
+  fi
   tabrestore /tmp/switch.csv
   makehosts switch
   makedns switch || true
@@ -51,7 +54,6 @@ load config/configuration
         break 2;
       fi
     done
-    #skip
   done
   chtab node=compute nodehm.serialport=1 nodehm.serialspeed=57600 nodehm.serialflow=hard
   makeconservercf
