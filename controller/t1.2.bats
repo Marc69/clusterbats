@@ -18,6 +18,10 @@ load config/configuration
   systemctl status dhcpd
 }
 
+@test "- 1.2.0.2 - Check if we have the hostlist command" {
+  [[ -x hostlist ]]
+}
+
 @test "- 1.2.1 - We can discover compute nodes" {
   rmnodecfg $(expand ${NODES}) || true
   #rmdef $(expand ${NODES}) || true
