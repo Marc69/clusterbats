@@ -1,7 +1,8 @@
 load common
-@test "1.0.1 - check iptables on master" {
-    todo "please create checks here"
-}
+# @test "1.0.1 - check iptables on master" {
+#    todo "please create checks here"
+# }
+
 @test "1.0.2 - check nfs server on master" {
     systemctl status nfs-server
     systemctl is-enabled nfs-server
@@ -13,10 +14,10 @@ load common
 @test "1.0.3 - check docker registry on master" {
     systemctl status docker-registry
     systemctl is-enabled docker-registry
-     
 }
 
 @test "1.1.0 - install controller" {
+# not for HA clusters
     if [[ "$(cat /trinity/version)" = $(ssh -o StrictHostKeyChecking=no node001 cat /trinity/version) ]]; then
         skip
     else

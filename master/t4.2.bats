@@ -12,7 +12,7 @@ load common
 @test "4.2.0.1 -- modules gcc" {
    [[ -d /trinity/clustervision/CentOS/7/modulefiles/gcc ]] && skip
    cd /root/modules
-   ./install-gcc-4.9.3.sh > /dev/null
+   ./install-gcc-5.3.0.sh > /dev/null
 }
 
 @test "4.2.0.2 -- modules freeipmi" {
