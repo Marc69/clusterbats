@@ -57,9 +57,20 @@ load config/configuration
    sshpass -p 123 ssh jane@login.vc-a ssh ${CONTAINER} date
 }
 
-@test "3.3.6 - Cleanup" {
+@test "3.3.7 - We can modify user data" {
+   sshpass -p system ssh login.vc-a obol -w system user modify --cn jeanette jane
+   sshpass -p system ssh login.vc-a obol -w system user show jane | grep jeanette
+}
+
+@test "3.3.8 - We can change a user's password" {
+   sshpass -p system ssh login.vc-a obol -w system user reset --password 1234 jane
+   sshpass -p 1234 ssh jane@login.vc-a pwd
+}
+
+@test "3.3.99 - Cleanup" {
    sshpass -p system ssh login.vc-a obol -w system user delete john || true
    sshpass -p system ssh login.vc-a obol -w system user delete jane || true
+   sshpass -p system ssh login.vc-a obol -w system group delete users || true
    sshpass -p system ssh login.vc-a obol -w system group delete users || true
    sshpass -p system ssh login.vc-a rm -rf /home/jane || true
    sshpass -p system ssh login.vc-a rm -rf /home/john || true
