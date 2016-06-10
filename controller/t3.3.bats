@@ -53,7 +53,7 @@ load config/configuration
 
 @test "3.3.5 - Users have passwordless login to compute nodes" {
    sshpass -p 123 ssh jane@login.vc-a sinfo
-   CONTAINER=$(hostlist -e ${NODES} | head -1)
+   CONTAINER=$(hostlist -e ${CONTAINERS} | head -1)
    sshpass -p 123 ssh jane@login.vc-a ssh ${CONTAINER} date
 }
 
