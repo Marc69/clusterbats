@@ -70,13 +70,13 @@ load config/configuration
 
 @test "1.1.21 - the appropriate openstack services are active" {
    status=$(openstack-status)
-   echo $status | grep nova-api | grep inactive
-   echo $status | grep nova-compute | grep -w active
-   echo $status | grep nova-network | grep -w active
-   echo $status | grep nova-scheduler | grep inactive
-   echo $status | grep openstack-dashboard | grep -w active
-   echo $status | grep dbus | grep -w active
-   echo $status | grep memcached | grep -w active
+   echo $status | grep "nova-api:[ ]*inactive"
+   echo $status | grep "nova-compute:[ ]*active"
+   echo $status | grep "nova-network:[ ]*active"
+   echo $status | grep "nova-scheduler:[ ]*inactive"
+   echo $status | grep "openstack-dashboard:[ ]*active"
+   echo $status | grep "dbus:[ ]*active"
+   echo $status | grep "memcached:[ ]*active"
 }
 
 @test "1.1.22 - Check that xcat configuration is stored in the mariadb container" {
