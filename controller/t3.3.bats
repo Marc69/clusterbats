@@ -1,6 +1,7 @@
 load config/configuration
 
-# Test cases for manage users
+# Test cases for managing users
+
 @test "3.3.0.1 - obol is installed" {
    sshpass -p system ssh login.vc-a obol -w system user list
 }
@@ -28,7 +29,7 @@ load config/configuration
 }
 
 
-@test "3.3.0 - Check if the group-power users is created" {
+@test "3.3.0 - Check if the group power-users is created" {
    sshpass -p system ssh login.vc-a obol -w system group list | grep power-users
 }
 
@@ -43,8 +44,8 @@ load config/configuration
 }
 
 @test "3.3.2 - We can set permissions for each group of users" {
-   [[ "$(stat -c '%G' /cluster/vc-a/apps/) == "power-users" ]] 
-   [[ "$(stat -c '%G' /cluster/vc-a/modulefiles/) == "power-users" ]] 
+   [[ $(sshpass -p system ssh login-a stat -c '%G' ../cluster/apps/) == "power-users" ]] 
+   [[ $(sshpass -p system ssh login-a stat -c '%G' /cluster/vc-a/modulefiles/) == "power-users" ]] 
 }
 
 @test "3.3.4 - Users have a home directory" {
