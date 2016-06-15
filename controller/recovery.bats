@@ -78,3 +78,8 @@ load config/configuration
     current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
     ssh $current lsdef -t site clustersite -c -i timezone | grep CET
 }
+
+@test "6.3.11 - Check OpenStack dashboard" {
+    current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
+    ssh $current wget -q -O- http://controller.cluster:/dashboard | grep "OpenStack"
+}

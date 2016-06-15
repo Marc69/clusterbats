@@ -1,5 +1,5 @@
 #!/usr/bin/env bats
-load config/configuration
+load ../controller/config/configuration
 
 @test "6.2.0 - Check pacemaker is installed" {
     ssh node001 pcs -h
@@ -32,14 +32,36 @@ load config/configuration
     ssh node001 systemctl status replicator.timer | grep "Active: active"
 }
 
-@test "6.2.1 - Check failover" {
+@test "6.2.1.0 - Check failover" {
    # Check if both nodes are active
     ssh node001 pcs cluster status | grep Online | grep controller-1.cluster | grep controller-2.cluster
     
     # Ok continue
-    active=$(ssh node001 pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
+    active=$(nodestat compute | grep https | awk -F: '{print $1}')
+
+    # Create a file under /drbd
+    ssh $active touch /drbd/test >> /dev/null
+
+    # Create an ldap user
+    ssh $active obol -w system -H ldap://controller.cluster user add test --sn test --password test >> /dev/null
+
+    # Change an xCAT table
+    ssh $active chtab key=timezone site.value=CET >> /dev/null
+
+    # Perform the failover
     ssh $active "echo 1 > /proc/sys/kernel/sysrq" 
     ssh $active "echo b > /proc/sysrq-trigger" &
+
+    current=$(nodestat compute | grep sshd | awk -F: '{print $1}')
+    for i in {30..0}; do
+        if ssh $current pcs resource | grep sentinel | grep Started; then
+            break
+        fi
+        sleep 10
+    done
+    [[ $i != 0 ]]
+    ssh $current pcs resource | grep sentinel | grep Started | grep -v $active
+}
 
 # todo: wait for pacemaker to resume and do post-failover tests on the current controller
 
