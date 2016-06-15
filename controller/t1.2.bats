@@ -96,6 +96,9 @@ load config/configuration
   [[ "$i" -ne 0 ]] # timeout
 }
 
+@test "1.2.4.1 - We can access the OpenStack dashboard" {
+  wget -q -O- http://controller.cluster:/dashboard | grep "OpenStack"
+}
 
 @test "1.2.5 - We can assign the containers to the default virtual cluster a" {
   skip Moved to use case 2.1

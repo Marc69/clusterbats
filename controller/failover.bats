@@ -8,6 +8,7 @@ load config/configuration
 @test "6.2.0.1 - Check sentinel is configured" {
     pcs resource | grep sentinel
 }
+
 @test "6.2.0.2 - Check drbd connection" {
     drbdadm cstate ha_disk | grep "Connected\|SyncSource"
 }
@@ -33,13 +34,23 @@ load config/configuration
     ssh controller-2.cluster systemctl status replicator.timer | grep "Active: active"
 }
 
-
 @test "6.2.1 - Check failover" {
-    # Check if both nodes are active
+    # Check if both nodes are on
     pcs cluster status | grep Online | grep controller-1.cluster | grep controller-2.cluster
     
     # Ok continue
     active=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
+
+    # Create a file under /drbd
+    ssh $active touch /drbd/test >> /dev/null
+
+    # Create an ldap user
+    ssh $active obol -w system -H ldap://controller.cluster user add test --sn test --password test >> /dev/null
+
+    # Change an xCAT table
+    ssh $active chtab key=timezone site.value=CET >> /dev/null
+
+    # Perform the failover
     pcs cluster standby $active
     while :; do
         if pcs resource | grep sentinel | grep Stopped; then
@@ -67,10 +78,10 @@ load config/configuration
     tabdump hosts
 }
 
-@test "6.2.1.3 - Check if the time is sychronized beteen controllers" { 
+@test "6.2.1.3 - Check if the time is synchronized between controllers" { 
     t1=$(ssh controller-1 date +%s)
     t2=$(ssh controller-2 date +%s)
-    [[ $(( $t1 - $t2)) < 2 ]]
+    [[ $(( $t1 - $t2)) < 2 ]] && [[ $(( $t2 - $t1)) < 2 ]]
 }
 
 @test "6.2.2.1 - Check if nova compute and network come up again" {
