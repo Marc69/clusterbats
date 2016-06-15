@@ -43,8 +43,8 @@ load config/configuration
 }
 
 @test "3.3.2 - We can set permissions for each group of users" {
-   [[ "$(stat -c '%G' /cluster/vc-a/apps/) == "power-users" ]] 
-   [[ "$(stat -c '%G' /cluster/vc-a/modulefiles/) == "power-users" ]] 
+   [[ $(sshpass -p system ssh login-a stat -c '%G' ../cluster/apps/) == "power-users" ]] 
+   [[ $(sshpass -p system ssh login-a stat -c '%G' ../cluster/modulefiles/) == "power-users" ]] 
 }
 
 @test "3.3.4 - Users have a home directory" {
