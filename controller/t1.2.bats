@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 load config/configuration
 
-@test "- 1.2.0.0 - We can configure the switch" {
+@test "1.2.0.0 - We can configure the switch" {
   # t1.1.19 in test sheet
   chtab node=switch hosts.ip=${SWITCH} # from configuration
   echo "${SWITCH_TABLE}" > /tmp/switch.csv
@@ -17,17 +17,16 @@ load config/configuration
   ping -c 1 switch &> /dev/null 
 }
 
-@test "- 1.2.0.1 - The dhcp server is running" {
+@test "1.2.0.1 - The dhcp server is running" {
   systemctl status dhcpd
 }
 
-@test "- 1.2.0.2 - Check if we have the hostlist command" {
+@test "1.2.0.2 - Check if we have the hostlist command" {
   [ -x "$(which hostlist)" ]
 }
 
-@test "- 1.2.1 - We can discover compute nodes" {
+@test "1.2.1 - We can discover compute nodes" {
   rmnodecfg $(expand ${NODES}) || true
-  #rmdef $(expand ${NODES}) || true
   nodeadd ${NODES} groups=compute
   makehosts compute
   makedns compute > /dev/null || true
@@ -47,7 +46,7 @@ load config/configuration
   [[ "$i" -ne 0 ]] 
 }
 
-@test "- 1.2.3 - We can netboot trinity compute nodes with serial over lan" {
+@test "1.2.3 - We can netboot trinity compute nodes with serial over lan" {
   for i in {1..2} ; do
     for NODE in $(expand ${NODES}); do
       if ! ssh $NODE docker ps 2>/dev/null | grep trinity; then
@@ -72,7 +71,7 @@ load config/configuration
   [[ "$i" -ne 0 ]] # timeout
 }
 
-@test "- 1.2.3.1 - We can netboot trinity compute nodes without serial over lan" {
+@test "1.2.3.1 - We can netboot trinity compute nodes without serial over lan" {
   for i in {1..2} ; do
     for NODE in $(expand ${NODES}); do
       if ! ssh $NODE docker ps 2>/dev/null | grep trinity; then
@@ -98,7 +97,7 @@ load config/configuration
 }
 
 
-@test "- 1.2.5 - We can assign the containers to the default virtual cluster a" {
+@test "1.2.5 - We can assign the containers to the default virtual cluster a" {
   skip Moved to use case 2.1
   CPUs=$(lsdef -t node -o node001 -i cpucount | grep cpucount | cut -d= -f2)
   touch /cluster/vc-a/etc/slurm/slurm-nodes.conf
@@ -112,18 +111,18 @@ EOF
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl restart slurm
 }
 
-@test "- 1.2.6 - There is a virtual login node" {
+@test "1.2.6 - There is a virtual login node" {
   skip Moved to use case 2.1
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a date
 }
 
-@test "- 1.2.7 - Slurm and munge are running on the virtual login nodes" {
+@test "1.2.7 - Slurm and munge are running on the virtual login nodes" {
   skip Moved to use case 2.1
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl status slurm
   sshpass -p 'system' ssh -o StrictHostKeyChecking=no login.vc-a systemctl status munge
 }
 
-@test "- 1.2.8 - The compute nodes can connect to the internet" {
+@test "1.2.8 - The compute nodes can connect to the internet" {
   skip Moved to use case 2.1
   ssh -o StrictHostKeyChecking=no node001 ping -c5 8.8.8.8
 }
