@@ -1,6 +1,7 @@
 load config/configuration
 
-# Test cases for manage users
+# Test cases for managing users
+
 @test "3.3.0.1 - obol is installed" {
    sshpass -p system ssh login.vc-a obol -H ldap://controller -w system user list
 }
@@ -28,7 +29,7 @@ load config/configuration
 }
 
 
-@test "3.3.0 - Check if the group-power users is created" {
+@test "3.3.0 - Check if the group power-users is created" {
    sshpass -p system ssh login.vc-a obol -H ldap://controller -w system group list | grep power-users
 }
 
@@ -43,8 +44,8 @@ load config/configuration
 }
 
 @test "3.3.2 - We can set permissions for each group of users" {
-   [[ "$(stat -c '%G' /cluster/vc-a/apps/) == "power-users" ]] 
-   [[ "$(stat -c '%G' /cluster/vc-a/modulefiles/) == "power-users" ]] 
+   [[ $(sshpass -p system ssh login-a stat -c '%G' ../cluster/apps/) == "power-users" ]] 
+   [[ $(sshpass -p system ssh login-a stat -c '%G' ../cluster/modulefiles/) == "power-users" ]] 
 }
 
 @test "3.3.4 - Users have a home directory" {
@@ -53,12 +54,24 @@ load config/configuration
 
 @test "3.3.5 - Users have passwordless login to compute nodes" {
    sshpass -p 123 ssh jane@login.vc-a sinfo
-   sshpass -p 123 ssh jane@login.vc-a ssh c001 date
+   CONTAINER=$(hostlist -e ${CONTAINERS} | head -1)
+   sshpass -p 123 ssh jane@login.vc-a ssh ${CONTAINER} date
 }
 
-@test "3.3.6 - Cleanup" {
+@test "3.3.7 - We can modify user data" {
+   sshpass -p system ssh login.vc-a obol -H ldap://controller -w system user modify --cn jeanette jane
+   sshpass -p system ssh login.vc-a obol -H ldap://controller -w system user show jane | grep jeanette
+}
+
+@test "3.3.8 - We can change a user's password" {
+   sshpass -p system ssh login.vc-a obol -H ldap://controller -w system user reset --password 1234 jane
+   sshpass -p 1234 ssh jane@login.vc-a pwd
+}
+
+@test "3.3.99 - Cleanup" {
    sshpass -p system ssh login.vc-a obol -H ldap://controller -w system user delete john || true
    sshpass -p system ssh login.vc-a obol -H ldap://controller -w system user delete jane || true
+   sshpass -p system ssh login.vc-a obol -H ldap://controller -w system group delete users || true
    sshpass -p system ssh login.vc-a obol -H ldap://controller -w system group delete users || true
    sshpass -p system ssh login.vc-a rm -rf /home/jane || true
    sshpass -p system ssh login.vc-a rm -rf /home/john || true

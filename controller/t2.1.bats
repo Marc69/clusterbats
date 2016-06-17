@@ -26,9 +26,9 @@ EOF
 }
 
 @test "2.0.3 - We can assign the containers to the default hardware group" {
-  nodeadd $CONTAINERS groups=hw-default
-  systemctl restart trinity-api
-  sleep 4
+   nodeadd $CONTAINERS groups=hw-default
+   systemctl restart trinity-api
+   sleep 14 
 }
 
 @test "2.0.4 - We can move resources to the first tenant." {
@@ -48,35 +48,35 @@ EOF
 }
 
 @test "2.0.5 - There is a virtual login node" {
-  source /root/keystonerc_a
-  for i in {50..0} ; do
-    nova list | grep login-a | awk -F\| '{print $4}' | grep ACTIVE && break
-    sleep 10
-  done
-  [[ "$i" -ne 0 ]] # timeout on nova start
+   source /root/keystonerc_a
+   for i in {50..0} ; do
+     nova list | grep login-a | awk -F\| '{print $4}' | grep ACTIVE && break
+     sleep 10
+   done
+   [[ "$i" -ne 0 ]] # timeout on nova start
 
-  for i in {50..0} ; do
-    ping -c1 login.vc-a > /dev/null 2>&1 && break
-    sleep 10
-  done
+   for i in {50..0} ; do
+     ping -c1 login.vc-a > /dev/null 2>&1 && break
+     sleep 10
+   done
 
-  [[ "$i" -ne 0 ]] # timeout on waiting for the login node to be booted
+   [[ "$i" -ne 0 ]] # timeout on waiting for the login node to be booted
 
-  for i in {50..0} ; do
-    sshpass -p 'system' ssh login.vc-a systemctl status slurm && break
-    sleep 10
-  done
-  [[ "$i" -ne 0 ]] # timeout on waiting for slurm to be started
+   for i in {50..0} ; do
+     sshpass -p 'system' ssh login.vc-a systemctl status slurm && break
+     sleep 10
+   done
+   [[ "$i" -ne 0 ]] # timeout on waiting for slurm to be started
 }
 
 @test "2.0.6 - Slurm and munge are running on the virtual login nodes" {
-  sshpass -p 'system' ssh login.vc-a systemctl restart slurm
-  sshpass -p 'system' ssh login.vc-a systemctl status slurm
-  sshpass -p 'system' ssh login.vc-a systemctl status munge
+   sshpass -p 'system' ssh login.vc-a systemctl restart slurm
+   sshpass -p 'system' ssh login.vc-a systemctl status slurm
+   sshpass -p 'system' ssh login.vc-a systemctl status munge
 }
 
 @test "2.0.7 - The compute nodes can connect to the internet" {
-  ssh  node001 ping -c5 8.8.8.8
+   ssh  node001 ping -c5 8.8.8.8
 }
 
 @test "2.1.1 - We can create a second tenant" {
@@ -140,7 +140,6 @@ EOF
     sleep 10
   done
   [[ "$i" -ne 0 ]] # timeout on waiting for the login node to be booted
-  sshpass -p 'system' ssh  login.vc-b date
 
   for i in {50..0} ; do
     sshpass -p 'system' ssh login.vc-a systemctl status slurm && break

@@ -28,7 +28,7 @@ load config/configuration
     tabdump hosts
 }
 
-@test "6.3.4 - Check if the time is sychronized beteen controllers" { 
+@test "6.3.4 - Check if the time is synchronized between controllers" { 
     t1=$(ssh controller-1 date +%s)
     t2=$(ssh controller-2 date +%s)
     [[ $(( $t1 - $t2)) < 2 ]]
@@ -64,3 +64,22 @@ load config/configuration
     [[ $i != 0 ]]
 }
 
+@test "6.3.8 - Check drbd + failover filesystem" {
+    current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
+    ssh $current ls /drbd/test
+}
+   
+@test "6.3.9 - Check ldap failover" {
+    current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
+    ssh $current obol -w system -H ldap://controller.cluster user list | grep test
+}
+
+@test "6.3.10 - Check xCAT data failover" {
+    current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
+    ssh $current lsdef -t site clustersite -c -i timezone | grep CET
+}
+
+@test "6.3.11 - Check OpenStack dashboard" {
+    current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
+    ssh $current wget -q -O- http://controller.cluster:/dashboard | grep "OpenStack"
+}
