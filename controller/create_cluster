@@ -1,9 +1,9 @@
 #!/bin/bash
 
 source /root/keystonerc_admin
-keystone tenant-create --name $1
+openstack project create --description "Project $1" $1
 obol -H ldap://controller -w system user add $1 --password system --cn $1 --sn $1 --givenName $1
-keystone user-role-add --user=$1 --tenant=$1 --role=admin
+openstack role add --user $1 --project $1 admin
 
 cat > /root/keystonerc_$1 <<EOF
 export OS_USERNAME=$1
@@ -27,5 +27,4 @@ http --ignore-stdin --check-status \
        X-Tenant:admin \
        X-Auth-Token:$TOKEN \
        specs:='{"default":2}'
-
 

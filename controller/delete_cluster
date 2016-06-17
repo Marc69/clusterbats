@@ -1,3 +1,5 @@
+#!/bin/bash
+
 set -x
 cluster=$1
 
@@ -22,8 +24,10 @@ nova delete $vm
 
 source /root/keystonerc_admin
 nova floating-ip-bulk-delete $ip
-keystone user-delete $1
-keystone tenant-delete $1
+
+obol -H ldap://controller -w system user delete $1
+obol -H ldap://controller -w system group delete $1
+openstack project delete $1
 
 rmdef -t group -o vc-$1
 makedns -d login-$1

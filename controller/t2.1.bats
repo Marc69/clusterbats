@@ -8,12 +8,12 @@ load config/configuration
 
 @test "2.0.1 - We can create a first tenant" {
    source /root/keystonerc_admin
-   if keystone user-get a; then
+   if openstack user show a; then
       skip
    fi
-   keystone tenant-create --name a
+   openstack project create a
    obol -H ldap://controller -w system user add "a" --password system --cn "a" --sn "a" --givenName "a"
-   keystone user-role-add --user=a --tenant=a --role=_member_
+   openstack role add --user a --project a _member_
 
 cat > /root/keystonerc_a <<EOF
 export OS_USERNAME=a
@@ -81,12 +81,12 @@ EOF
 
 @test "2.1.1 - We can create a second tenant" {
    source /root/keystonerc_admin
-   if keystone user-get b; then
+   if openstack user show b; then
       skip
    fi
-   keystone tenant-create --name b
+   openstack project create b
    obol -H ldap://controller -w system user add "b" --password system --cn "b" --sn "b" --givenName "b"
-   keystone user-role-add --user=b --tenant=b --role=_member_
+   openstack role add --user b --project b _member_
 
 cat > /root/keystonerc_b <<EOF
 export OS_USERNAME=b
