@@ -17,20 +17,12 @@ load config/configuration
    iptables-save | grep -C3 'POSTROUTING -s 10.146.0.0/16 ! -o docker0 -j MASQUERADE' | grep 'POSTROUTING -o [0-z]*[0-1] -j MASQUERADE'
 }
 
-@test "1.1.6.1 - iptables have the right acceptance rules" {
-   iptables-save | grep -C3 'br100 -j ACCEPT'
-}
-
-@test "1.1.8 - 3d interface is taken over by the bridge" {
-   ip a | grep 'master br100'
-}
-
 @test "1.1.9 - SElinux is disabled" {
   sestatus | grep 'SELinux status' | egrep disabled
 }
 
 @test "1.1.10 - The timezone is set correctly" {
-  date | grep $TIMEZONE
+  timedatectl | grep "Time zone" | grep "$TIMEZONE"
 }
 
 @test "1.1.12 - Hostname is set correctly" {
@@ -77,13 +69,14 @@ load config/configuration
 }
 
 @test "1.1.21 - the appropriate openstack services are active" {
-   openstack-status | grep nova-api | grep inactive
-   openstack-status | grep nova-compute | grep -w active
-   openstack-status | grep nova-network | grep -w active
-   openstack-status | grep nova-scheduler | grep inactive
-   openstack-status | grep openstack-dashboard | grep -w active
-   openstack-status | grep dbus | grep -w active
-   openstack-status | grep memcached | grep -w active
+   status=$(openstack-status)
+   echo $status | grep "nova-api:[ ]*inactive"
+   echo $status | grep "nova-compute:[ ]*active"
+   echo $status | grep "nova-network:[ ]*active"
+   echo $status | grep "nova-scheduler:[ ]*inactive"
+   echo $status | grep "openstack-dashboard:[ ]*active"
+   echo $status | grep "dbus:[ ]*active"
+   echo $status | grep "memcached:[ ]*active"
 }
 
 @test "1.1.22 - Check that xcat configuration is stored in the mariadb container" {
@@ -96,10 +89,14 @@ load config/configuration
    tabdump site
 }
 
-@test "The controller hosts an openstack image -- can be removed" {
-   # Can be removed
-   tabdump osimage | grep "centos7-x86_64-install-openstack"
+@test "1.1.23 Check max connections on the database > 1024" {
+   max_conns=$(mysql -u root -psystem --protocol=tcp -N -B -e "select @@max_connections")
+   [[ $max_conns -ge 1024 ]]
 }
 
-#@test "The controller has postscripts for the addition of the trinity api and dashboard"
+
+@test "1.1.24 - Check drbd connection" {
+    pcs status nodes | grep controller-2 || skip "Pacemaker does not seem to be configured for HA"
+    drbdadm cstate ha_disk | grep "Connected\|SyncSource"
+}
    

@@ -1,5 +1,5 @@
 #!/usr/bin/env bats
-load config/configuration
+load ../controller/config/configuration
 
 @test "6.2.0 - Check pacemaker is installed" {
     ssh node001 pcs -h
