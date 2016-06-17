@@ -63,5 +63,15 @@ load ../controller/config/configuration
     ssh $current pcs resource | grep sentinel | grep Started | grep -v $active
 }
 
-# todo: wait for pacemaker to resume and do post-failover tests on the current controller
+@test "6.2.1.1 - Check DNS after failover" { 
+    ssh $current host controller.cluster controller.cluster
+    ssh $current "host controller-1.cluster controller.cluster || host controller-2.cluster controller.cluster"
+    ssh $current host login.vc-a controller.cluster
+}
+
+@test "6.2.1.2 - Check xCAT commands after failover" { 
+    ssh $current tabdump hosts
+}
+
+# todo: further post-failover tests on the current controller
 
