@@ -32,27 +32,31 @@ load ../controller/config/configuration
     ssh node001 systemctl status replicator.timer | grep "Active: active"
 }
 
-@test "6.2.1.0 - Check failover" {
-   # Check if both nodes are active
+@test "6.2.0.6 - Check if both nodes are active" {
     ssh node001 pcs cluster status | grep Online | grep controller-1.cluster | grep controller-2.cluster
-    
-    # Ok continue
+}
+
+@test "6.2.0.99 - Apply changes for post-failover testing" {
     active=$(nodestat compute | grep https | awk -F: '{print $1}')
+#    debug $active
 
     # Create a file under /drbd
-    ssh $active touch /drbd/test >> /dev/null
+    ssh $active touch /drbd/test || True
 
     # Create an ldap user
-    ssh $active obol -w system -H ldap://controller.cluster user add test --sn test --password test >> /dev/null
+    ssh $active obol -w system -H ldap://controller.cluster user add test --sn test --password test || True
 
     # Change an xCAT table
-    ssh $active chtab key=timezone site.value=CET >> /dev/null
+    ssh $active chtab key=timezone site.value=CET || True
+}
 
-    # Perform the failover
+@test "6.2.1.0 - Check failover" {
+    active=$(nodestat compute | grep https | awk -F: '{print $1}')
     ssh $active "echo 1 > /proc/sys/kernel/sysrq" 
     ssh $active "echo b > /proc/sysrq-trigger" &
 
     current=$(nodestat compute | grep sshd | awk -F: '{print $1}')
+#    debug $current
     for i in {30..0}; do
         if ssh $current pcs resource | grep sentinel | grep Started; then
             break
@@ -64,12 +68,14 @@ load ../controller/config/configuration
 }
 
 @test "6.2.1.1 - Check DNS after failover" { 
+    current=$(nodestat compute | grep sshd | awk -F: '{print $1}')
     ssh $current host controller.cluster controller.cluster
     ssh $current "host controller-1.cluster controller.cluster || host controller-2.cluster controller.cluster"
     ssh $current host login.vc-a controller.cluster
 }
 
 @test "6.2.1.2 - Check xCAT commands after failover" { 
+    current=$(nodestat compute | grep sshd | awk -F: '{print $1}')
     ssh $current tabdump hosts
 }
 
@@ -79,7 +85,7 @@ load ../controller/config/configuration
     sleep 5m
     for NODE in node00[1-2]; do
         if (ssh $NODE pcs resource | grep sentinel | grep Started > /dev/null); then
-            debug $NODE;
+#            debug $NODE;
             ssh $NODE bats /root/clusterbats/controller/post-failover.bats;
             break
         fi

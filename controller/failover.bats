@@ -34,23 +34,26 @@ load config/configuration
     ssh controller-2.cluster systemctl status replicator.timer | grep "Active: active"
 }
 
+@test "6.2.0.99 - Apply changes for post-failover testing" {
+    active=$(nodestat compute | grep https | awk -F: '{print $1}')
+#    debug $active
+
+    # Create a file under /drbd
+    ssh $active touch /drbd/test || True
+
+    # Create an ldap user
+    ssh $active obol -w system -H ldap://controller.cluster user add test --sn test --password test || True
+
+    # Change an xCAT table
+    ssh $active chtab key=timezone site.value=CET || True
+}
+
 @test "6.2.1 - Check failover" {
     # Check if both nodes are on
     pcs cluster status | grep Online | grep controller-1.cluster | grep controller-2.cluster
     
     # Ok continue
     active=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
-
-    # Create a file under /drbd
-    ssh $active touch /drbd/test >> /dev/null
-
-    # Create an ldap user
-    ssh $active obol -w system -H ldap://controller.cluster user add test --sn test --password test >> /dev/null
-
-    # Change an xCAT table
-    ssh $active chtab key=timezone site.value=CET >> /dev/null
-
-    # Perform the failover
     pcs cluster standby $active
     while :; do
         if pcs resource | grep sentinel | grep Stopped; then
@@ -113,4 +116,24 @@ load config/configuration
             sleep 10
     done
     [[ $i != 0 ]]
+}
+
+@test "6.2.2.4 - Check drbd + failover filesystem" {
+    current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
+    ssh $current -f /drbd/test
+}
+  
+@test "6.2.2.5 - Check ldap failover" {
+    current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
+    ssh $current obol -w system -H ldap://controller.cluster user list | grep test
+}
+
+@test "6.2.2.6 - Check xCAT data failover" {
+    current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
+    ssh $current lsdef -t site clustersite -c -i timezone | grep CET
+}
+
+@test "6.2.2.7 - Check OpenStack dashboard" {
+    current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
+    ssh $current wget -q -O- http://controller.cluster:/dashboard | grep "OpenStack"
 }

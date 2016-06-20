@@ -31,7 +31,7 @@ load config/configuration
 @test "6.3.4 - Check if the time is synchronized between controllers" { 
     t1=$(ssh controller-1 date +%s)
     t2=$(ssh controller-2 date +%s)
-    [[ $(( $t1 - $t2)) < 2 ]]
+    [[ $(( $t1 - $t2)) < 2 && $(( $t2 - $t1)) < 2]]
 }
 
 @test "6.3.5 - Check if galera comes up again" {
@@ -66,7 +66,7 @@ load config/configuration
 
 @test "6.3.8 - Check drbd + failover filesystem" {
     current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
-    ssh $current ls /drbd/test
+    ssh $current -f /drbd/test
 }
    
 @test "6.3.9 - Check ldap failover" {
@@ -82,4 +82,10 @@ load config/configuration
 @test "6.3.11 - Check OpenStack dashboard" {
     current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
     ssh $current wget -q -O- http://controller.cluster:/dashboard | grep "OpenStack"
+}
+
+@test "6.3.99 - Cleanup" {
+    current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
+    rm -I /drbd/test || true
+    sshpass -p system ssh login.vc-a obol -H ldap://controller -w system user delete test || true
 }

@@ -41,7 +41,7 @@
 
 @test "6.2.2.4 - Check drbd + failover filesystem" {
     current=$(pcs resource | grep sentinel | awk -F: '{print $5}' | awk '{print $2}')
-    ssh $current ls /drbd/test
+    ssh $current -f /drbd/test
 }
   
 @test "6.2.2.5 - Check ldap failover" {
