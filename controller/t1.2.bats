@@ -47,6 +47,9 @@ load config/configuration
 }
 
 @test "1.2.3 - We can netboot trinity compute nodes with serial over lan" {
+  if [[ "$NO_SOL" ]]; then
+      skip "No serial over LAN in this environment"
+  fi
   for i in {1..2} ; do
     for NODE in $(expand ${NODES}); do
       if ! ssh $NODE docker ps 2>/dev/null | grep trinity; then
