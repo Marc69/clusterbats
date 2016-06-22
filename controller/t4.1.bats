@@ -38,9 +38,8 @@ load config/configuration
 }
 
 @test "4.1.1.1 - Power-users have rwx access to /shared directory with software" {
-   for dir in $(sshpass -p 123 ssh jane@login.vc-a ls /cluster/); do
-       sshpass -p 123 ssh jane@login.vc-a ls -ltr /cluster | grep $dir | grep power-users | grep drwxrwx
-   done
+   sshpass -p 123 ssh jane@login.vc-a ls -ltr /cluster | grep apps | grep power-users | grep drwxrwx
+   sshpass -p 123 ssh jane@login.vc-a ls -ltr /cluster | grep modulefiles | grep power-users | grep drwxrwx
 }
 
 @test "4.1.1.2 - Power-users can write in apps/ and modulefiles/ directories" {
