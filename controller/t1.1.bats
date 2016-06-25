@@ -53,8 +53,8 @@ load config/configuration
    if [ -f /install/netboot/centos7/x86_64/trinity/rootimg.gz ]; then
        skip
    fi
-   genimage centos7-x86_64-netboot-compute
-   packimage centos7-x86_64-netboot-compute
+   genimage centos7-x86_64-netboot-trinity
+   packimage centos7-x86_64-netboot-trinity
 }
 
 #test "1.1.19 The switch is correctly configured for node discovery" in t1.2.bats
