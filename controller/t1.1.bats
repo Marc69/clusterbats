@@ -45,6 +45,14 @@ load config/configuration
   tabdump site | grep -i timezone | grep $TIMEZONE
 }
 
+@test "1.1.16.1 - The dnshandler is set correctly in the site table" {
+  tabdump site | grep dnshandler | grep ddns
+}
+
+@test "1.1.16.2 - The networks table had an entry for the internal net" {
+  tabdump networks | grep internal_net
+}
+
 @test "1.1.17 - Openvswitch is available" {
    find /install/netboot/centos7/x86_64/trinity/rootimg/ -name "openvswitch" | grep openvswitch
 }
