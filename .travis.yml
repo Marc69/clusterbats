@@ -1,8 +1,5 @@
 sudo: required 
-before_install:
-- apt-get -y install python-pip
-- apt-get -y install git jq
-- git clone https://github.com/sstephenson/bats.git && bats/install.sh /usr/local
-- pip install python-hostlist
-- pip install httpie
-script: bats master/t1.1.bats
+script:
+- bash install_bats.sh
+- bats master/t1.1.bats
+
