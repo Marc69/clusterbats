@@ -1,0 +1,4 @@
+before_install:
+- bash install_bats.sh
+sudo: required 
+script: bats master/t1.1.bats
