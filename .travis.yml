@@ -1,10 +1,16 @@
 sudo: required 
+
 language: python
+
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install-y systemctl
+
 install:
-- git clone https://github.com/sstephenson/bats.git && bats/install.sh .
-- git clone https://github.com/clustervision/trinity && trinity/update
-- apt-get -y install systemctl
+  - git clone https://github.com/sstephenson/bats.git && bats/install.sh .
+  - git clone https://github.com/clustervision/trinity && trinity/update
+
 script:
-- ./bin/bats master/t1.1.bats
-- ls -a
+  - ./bin/bats master/t1.1.bats
+  - ls -a
 
