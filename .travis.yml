@@ -7,7 +7,7 @@ before_install:
 
 install:
   - git clone https://github.com/sstephenson/bats.git && bats/install.sh .
-  - git clone https://github.com/clustervision/trinity && trinity/update
+  - git clone https://github.com/clustervision/trinity && trinity/update master
 
 script:
   - ./bin/bats master/t1.1.bats
