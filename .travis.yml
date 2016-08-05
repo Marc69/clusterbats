@@ -3,7 +3,7 @@ sudo: required
 language: python
 
 before_install:
-  - sudo apt-get update --force-yes && sudo apt-get upgrade --force-yes && sudo apt-get dist-upgrade --force-yes && sudo apt-get install -y systemd
+  - sudo apt-get update -y
 
 install:
   - git clone https://github.com/sstephenson/bats.git && bats/install.sh .

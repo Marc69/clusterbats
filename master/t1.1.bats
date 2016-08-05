@@ -4,16 +4,16 @@ load common
 # }
 
 @test "1.0.2 - check nfs server on master" {
-    systemctl status nfs-server
-    systemctl is-enabled nfs-server
+    service nfs-server status
+    service nfs-server is-enabled
     showmount -e localhost | grep trinity
     showmount -e localhost | grep install
     showmount -e localhost | grep tftpboot
 }
 
 @test "1.0.3 - check docker registry on master" {
-    systemctl status docker-registry
-    systemctl is-enabled docker-registry
+    service docker-registry status
+    service docker-registry is-enabled
 }
 
 @test "1.1.0 - install controller" {
