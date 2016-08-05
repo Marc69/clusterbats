@@ -3,7 +3,8 @@ sudo: required
 language: python
 
 before_install:
-  - sudo apt-get -qq update
+  - sudo apt-get update
+  - sudo apt-get install -y systemd
 
 install:
   - git clone https://github.com/sstephenson/bats.git && bats/install.sh .
