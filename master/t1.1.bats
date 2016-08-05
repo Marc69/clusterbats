@@ -19,7 +19,7 @@ load common
 @test "1.1.0 - install controller" {
 # not for HA clusters
     if [[ "$(cat /trinity/version)" = $(ssh -o StrictHostKeyChecking=no node001 cat /trinity/version) ]]; then
-        skip
+        skip "Current Trinity version already installed"
     else
         nodeset compute osimage=
         rpower compute reset
