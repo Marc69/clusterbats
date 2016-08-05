@@ -18,7 +18,7 @@ load common
 
 @test "1.1.0 - install controller" {
 # not for HA clusters
-    echo "Trinity version: "$(cat /trinity/version)""
+    debug "Trinity version: $(cat /trinity/version)"
     if [[ "$(cat /trinity/version)" = $(ssh -o StrictHostKeyChecking=no node001 cat /trinity/version) ]]; then
         skip "Current Trinity version already installed"
     else
