@@ -11,5 +11,6 @@ install:
 
 script:
   - ./bin/bats master/t1.1.bats
-  - ls -a
+  - ls ..
+  - ls ../master
 
