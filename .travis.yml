@@ -1,7 +1,7 @@
 sudo: required 
 language: python
 install:
-- git clone https://github.com/sstephenson/bats.git && bats/install.sh ../.local/bin
+- git clone https://github.com/sstephenson/bats.git && bats/install.sh .
 script:
 - bats master/t1.1.bats
 
