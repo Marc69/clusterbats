@@ -19,9 +19,7 @@ load common
 @test "1.1.0 - install controller" {
 # not for HA clusters
     debug "Trinity version: $(cat /trinity/version)"
-    if [[ "$(cat /trinity/version)" = $(ssh -o StrictHostKeyChecking=no node001 cat /trinity/version) ]]; then
-        skip "Current Trinity version already installed"
-    else
+    if [[ -z "$(cat /trinity/version)" || "$(cat /trinity/version)" != $(ssh -o StrictHostKeyChecking=no node001 cat /trinity/version) ]]; then
         nodeset compute osimage=
         rpower compute reset
         debug "node001 restarted @ $(date)"
@@ -38,5 +36,7 @@ load common
             debug $(ssh -o StrictHostKeyChecking=no node001 cat /var/log/postinstall.log)
         done
         [[ "$i" -ne 0 ]] # timeout after 2.5 hours
+    else
+        skip "Current Trinity version already installed"
     fi
 }
