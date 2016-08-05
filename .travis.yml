@@ -2,7 +2,7 @@ sudo: required
 language: python
 install:
 - git clone https://github.com/sstephenson/bats.git && bats/install.sh .
-- git clone https://github.com/clustervision/trinity && trinity/.update_master
+- git clone https://github.com/clustervision/trinity && ls trinity/update master
 script:
 - ./bin/bats master/t1.1.bats
 - ls -a
