@@ -4,4 +4,5 @@ install:
 - git clone https://github.com/sstephenson/bats.git && bats/install.sh .
 script:
 - bats master/t1.1.bats
+- ls -a
 
