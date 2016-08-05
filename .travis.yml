@@ -10,7 +10,7 @@ install:
   - git clone https://github.com/clustervision/trinity && trinity/update controller
 
 script:
-  - ./bin/bats master/t1.1.bats
   - ls ..
   - ls ../master
+  - ./bin/bats master/t1.1.bats
 
